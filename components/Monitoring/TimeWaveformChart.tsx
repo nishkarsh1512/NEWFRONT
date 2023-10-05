@@ -328,10 +328,17 @@ const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
             "downloadPNG",
             "downloadJPEG",
             "downloadPDF",
-            "downloadSVG", // Add or remove desired formats
             "separator",
             "printChart",
+            "label",
           ],
+        },
+      },
+      menuItemDefinitions: {
+        // Custom definition
+        label: {
+          onclick: () => {},
+          text: "Show label",
         },
       },
     },

@@ -52,11 +52,12 @@ const Header = () => {
           Why EyeVib
         </h1>
         <p className="text-center md:text-xl font-medium text-xs leading-8 tracking-wider lg:w-5/6 md:px-4 px-2">
-          EyeVib revolutionizes maintenance by seamlessly merging AI, IoT, and
-          advanced sensors, enabling real-time monitoring and diagnostics. Our
-          integrated approach empowers businesses to shift from reactive to
-          proactive maintenance strategies, preventing costly downtime and
-          enhancing operational efficiency.
+          EyeVib software is an advanced AI-driven solution designed for
+          real-time equipment health monitoring and diagnostics. It helps
+          industries maximize productivity by proactively assessing the
+          condition of their machinery. This solution not only ensures smoother
+          production but also saves significant costs related to unexpected
+          downtimes.
         </p>
       </div>
       <div className="relative xl:bottom-52 xl2550:bottom-40">
@@ -68,15 +69,16 @@ const Header = () => {
         <div className="absolute lg1100:top-60 sm:top-32 top-16 w-full z-10 flex items-center text-white md:px-20 px-10">
           <div className="lg:text-2xl md:text-xl text-center font-medium leading-8 tracking-wider lg1100:max-w-7xl mx-auto">
             <p className="mb-5">
-              EyeVib’s predictive maintenance solutions work towards achieving
-              productive results from day one with a combination of AI + IoT +
-              LTE driven seamless monitoring, advanced sensors, and prescriptive
-              diagnostics.
+              EyeVib leverages the power of advanced AI algorithms to
+              revolutionize equipment maintenance. Our solution continuously
+              monitors machine health, predicting potential failures at the
+              moment of occurrence. This proactive approach minimizes unexpected
+              downtimes, boosts operational efficiency, and extends the lifespan
+              of critical assets.
             </p>
             <p>
-              We implement state of the art scalable technology to monitor the
-              equipment health to eliminate unplanned downtime that costs around
-              100 Bn. $ per year on the Global Economy.
+              EyeVib empowers industries to maintain their competitive edge by
+              ensuring smooth and uninterrupted production processes.
             </p>
           </div>
         </div>

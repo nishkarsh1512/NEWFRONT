@@ -1,42 +1,38 @@
-import { Button, Stack, Tooltip } from "@mui/material"
-import axiosConfig from "../config/axiosConfig"
+import * as React from "react"
+import { Button, IconButton, Stack, Tooltip } from "@mui/material"
 import DashboardLayout from "../layout/dashboard"
-import UploadOutlinedIcon from "@mui/icons-material/UploadOutlined"
 import AddIcon from "@mui/icons-material/Add"
 import { DataGrid, GridColDef } from "@mui/x-data-grid"
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings"
 import PersonIcon from "@mui/icons-material/Person"
 import dynamic from "next/dynamic"
-import { useQuery } from "@tanstack/react-query"
-import useUserStore from "../store/user"
-import { useEffect, useState } from "react"
-import axios from "axios"
+import { useState } from "react"
 import { SelectChangeEvent } from "@mui/material/Select"
-
 import MenuItem from "@mui/material/MenuItem"
 import Select from "@mui/material/Select"
-
-import * as React from "react"
 import { ChangeEvent } from "react"
 import Box from "@mui/material/Box"
 import Modal from "@mui/material/Modal"
-
 import Avatar from "@mui/material/Avatar"
-
 import CssBaseline from "@mui/material/CssBaseline"
 import TextField from "@mui/material/TextField"
 import FormControlLabel from "@mui/material/FormControlLabel"
 import Checkbox from "@mui/material/Checkbox"
 import Link from "@mui/material/Link"
 import Grid from "@mui/material/Grid"
-
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined"
 import Typography from "@mui/material/Typography"
 import Container from "@mui/material/Container"
 import { createTheme, ThemeProvider } from "@mui/material/styles"
 import useAuthStore from "../store/auth"
-import Snackbar from "@mui/material/Snackbar"
 import MuiAlert, { AlertProps } from "@mui/material/Alert"
+import EditIcon from "@mui/icons-material/Edit"
+import DeleteIcon from "@mui/icons-material/Delete"
+import useGetUsers from "../api/hooks/administration/useGetUsers"
+import { registerUser } from "../api/administration"
+import useUserStore from "../store/user"
+import { useModalStore } from "../store/modal"
+import DeleteAccountModal from "../components/Administration/DeleteAccountModal"
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -45,23 +41,16 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
 })
 
-function Copyright(props: any) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        EyeVib
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  )
-}
+const Copyright = (props: any) => (
+  <Typography variant="body2" color="text.secondary" align="center" {...props}>
+    {"Copyright © "}
+    <Link color="inherit" href="https://mui.com/">
+      EyeVib
+    </Link>{" "}
+    {new Date().getFullYear()}
+    {"."}
+  </Typography>
+)
 
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme()
@@ -100,7 +89,9 @@ const columns: GridColDef[] = [
       return (
         <div className="image flex gap-2 items-center ml-5">
           <img
-            src={cellValues.formattedValue?.profileImage}
+            src={
+              "https://www.alchinlong.com/wp-content/uploads/2015/09/sample-profile.png"
+            }
             className="rounded-full w-[50px] h-[50px] object-cover"
             alt="user profile image"
           />
@@ -191,54 +182,59 @@ const columns: GridColDef[] = [
       )
     },
   },
+  {
+    field: "action",
+    headerName: "ACTION",
+    type: "string",
+
+    flex: 1,
+    sortable: false,
+    align: "center",
+    headerAlign: "center",
+    renderCell: (cellValues) => (
+      <div className="">
+        <IconButton aria-label="delete" className="text-lightBlue">
+          <EditIcon />
+        </IconButton>
+        <IconButton
+          aria-label="delete"
+          className="text-infoCardDarkRed"
+          onClick={() => cellValues.formattedValue.delete()}
+        >
+          <DeleteIcon />
+        </IconButton>
+      </div>
+    ),
+  },
 ]
 
-import { AppContextProvider } from "../context/contextProvider"
-
 const Administration = () => {
-  const { users, setUsers } = useUserStore()
   const { me } = useAuthStore()
 
   const [open, setOpen] = React.useState(false)
   const [open1, setOpen1] = React.useState(false)
-  /////////////////////////////////
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const [phone, setPhone] = useState("")
   const [email, setEmail] = useState("")
   const [pass, setPass] = useState("")
-  //////////////////////////////
+
+  // Handlers
   const handleOpen = () => {
     setOpen(true)
   }
+
   const handleClose = () => {
     setOpen(false)
     setOpen1(false)
   }
 
-  // const { data, isLoading, error } = useQuery(
-  //   ["users"],
-  //   async () => {
-  //     return axiosConfig
-  //       .get(`http://localhost:4000/api/users/all`)
-  //       .then((res) => res.data)
-  //   },
-  //   {
-  //     refetchOnWindowFocus: false,
-  //     refetchOnReconnect: false,
-  //     onSuccess: (data) => {
-  //       setUsers(data)
-  //     },
-  //   }
-  // )
-  useEffect(() => {
-    axios.post("http://103.154.184.52:4000/api/threshold/users").then((response) => {
-      console.log("users   users")
-      console.log(response.data)
-      console.log("users   users")
-      setUsers(response.data)
-    })
-  }, [])
+  const {
+    data: users,
+    isLoading: isUsersLoading,
+    error: isUersError,
+    refetch: refetchUsers,
+  } = useGetUsers()
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -275,8 +271,11 @@ const Administration = () => {
     setPass(event.target.value)
   }
 
-  const saveNow = () => {
-    const article = {
+  const { setSelectedUser } = useUserStore()
+  const { setDelAccModalActive } = useModalStore()
+
+  const saveNow = async () => {
+    const user = {
       fullName: firstName + " " + lastName,
       email: email,
       phone: phone,
@@ -284,32 +283,17 @@ const Administration = () => {
       profilePhoto: "",
       role: selectedOption,
     }
-    console.log(article)
-    ///////////////////////
-    /////////////////////////
-    axios
-      .post("http://103.154.184.52:4000/api/threshold/register", article)
-      .then((response) => {
-        console.log(response.data)
-        setOpen1(true)
 
-        console.log("refetching users")
-        // Chain the second Axios request here
-        return axios.post("http://103.154.184.52:4000/api/threshold/users")
-      })
-      .then((response) => {
-        console.log("users users")
-        console.log(response.data)
-        console.log("users users")
-        setUsers(response.data)
-      })
-      .catch((error) => {
-        console.error("An error occurred:", error)
-        setOpen1(false)
-      })
-    ///////////////////////////
-    //////////////////////////
+    const response = await registerUser({
+      user,
+    })
+
+    if (response) {
+      refetchUsers()
+      setOpen1(true)
+    }
   }
+
   return (
     <DashboardLayout>
       <AdministrationHeader />
@@ -352,16 +336,26 @@ const Administration = () => {
             menuIconButton: "visible ml-[-6px] w-fit",
           }}
           style={{ height: "calc(100vh - 200px)" }}
-          rows={users.map((item, index) => ({
-            id: item._id,
-            user: {
-              name: item.name,
-              profileImage: item.profileImage,
-            },
-            email: item.email,
-            phone: item.phone ? item.phone : "null",
-            role: item.role,
-          }))}
+          rows={
+            users
+              ? users.map((item, index) => ({
+                  id: item._id,
+                  user: {
+                    name: item.name,
+                    profileImage: item.profileImage,
+                  },
+                  email: item.email,
+                  phone: item.phone ? item.phone : "null",
+                  role: item.role,
+                  action: {
+                    delete: () => {
+                      setSelectedUser(item)
+                      setDelAccModalActive(true)
+                    },
+                  },
+                }))
+              : []
+          }
           columns={columns}
           disableSelectionOnClick
           pageSize={10}
@@ -464,6 +458,7 @@ const Administration = () => {
                           <MenuItem value="Admin">Admin</MenuItem>
                         </Select>
                       </Grid>
+
                       <Grid item xs={12}>
                         <TextField
                           required
@@ -476,6 +471,7 @@ const Administration = () => {
                           onChange={handlePassChange}
                         />
                       </Grid>
+
                       <Grid item xs={12}>
                         <FormControlLabel
                           control={
@@ -484,7 +480,7 @@ const Administration = () => {
                               color="primary"
                             />
                           }
-                          label="I want to receive inspiration, marketing promotions and updates via email."
+                          label="Confirm the details are correct"
                         />
                       </Grid>
                     </Grid>
@@ -495,6 +491,7 @@ const Administration = () => {
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
                         onClick={saveNow}
+                        className="bg-lightBlue hover:bg-lightBlue"
                       >
                         Add Now
                       </Button>
@@ -506,27 +503,17 @@ const Administration = () => {
                     </Grid>
 
                     <Grid container justifyContent="flex-center">
-                      <Grid item>
-                        {/* <Link href="#" variant="body2">
-                          Already have an account? Sign in
-                        </Link> */}
-                        {/* {open1 && (
-                          <Alert severity="success">
-                            This is a success alert — check it out!
-                          </Alert>
-                        )} */}
-                      </Grid>
+                      <Grid item></Grid>
                     </Grid>
                   </Box>
                 </Box>
                 <Copyright sx={{ mt: 5 }} />
               </Container>
             </ThemeProvider>
-
-            {/* ///////////////////////////////////////////////////////// */}
           </Box>
         </Modal>
       </React.Fragment>
+      <DeleteAccountModal refetchUsers={refetchUsers} />
     </DashboardLayout>
   )
 }

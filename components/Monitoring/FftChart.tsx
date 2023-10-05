@@ -158,7 +158,6 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
     console.log("damn")
   }
 
-  /////////////////////////////////////////////
   const options = (
     x_axis: boolean,
     y_axis: boolean,
@@ -681,7 +680,6 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
           </div>
           {/* AXIS SECTION  */}
           <div className="flex items-center gap-4px-2 ">
-            <p className="mr-2 font-semibold text-gray-400">AXIS</p>
             {!useFirstOptions && (
               <div className="flex items-center gap-2">
                 {[

@@ -116,9 +116,20 @@ const Navbar = () => {
     )
 
   const items = headerLinks.map((link) => {
-    const menuItems = link.links?.map((item) => (
-      <Menu.Item key={item.link}>{item.label}</Menu.Item>
-    ))
+    const menuItems = link.links?.map(({ label, link }) => {
+      return (
+        <Menu.Item
+          key={link}
+          onClick={() => {
+            label === "About CoEAMT"
+              ? window?.open("http://localhost:3000/Brochure_CoEAMT.pdf")
+              : null
+          }}
+        >
+          {label}
+        </Menu.Item>
+      )
+    })
 
     if (menuItems) {
       return (
@@ -177,7 +188,7 @@ const Navbar = () => {
             </div>
             <div className="ml-4">
               <p>
-                Developed by Center of Excellence in Advanced Manufacturing
+                Developed by Centre of Excellence in Advanced Manufacturing
                 Technology,
               </p>
               <p className="text-center">IIT Kharagpur</p>
