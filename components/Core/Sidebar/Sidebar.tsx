@@ -10,8 +10,6 @@ import { NoSsr } from "@mui/base"
 import useAuthStore from "../../../store/auth"
 import { useContext } from "react"
 import { AppContext } from "../../../components/Monitoring/AppContext"
-import Popover from "@mui/material/Popover"
-import Typography from "@mui/material/Typography"
 import LogoutIcon from "@mui/icons-material/Logout"
 import { AppContextProvider } from "../../../context/contextProvider"
 import {
@@ -22,6 +20,8 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material"
+import IIT from "../../../assets/images/iit-logo.png"
+import Image from "next/image"
 
 export const Sidebar = () => {
   console.log("masala magic")
@@ -228,6 +228,22 @@ export const Sidebar = () => {
             })}
           </div>
         </div>
+
+        <div className="gap-2 flex items-center relative pl-[18px] w-full h-[80px] overflow-hidden">
+          <img
+            src={IIT.src}
+            alt=""
+            loading="lazy"
+            className="w-[44px] h-[44px]"
+          />
+          <span className="text-gray-500 absolute font-semibold left-[84px] w-[162px] flex flex-col">
+            <span className="text-gray-400">Developed by : </span>
+            <span>
+              Centre of Excellence in Advanced Manufacturing Technology, IIT
+              Kharagpur
+            </span>
+          </span>
+        </div>
         <div>
           <div
             className={classNames(
@@ -245,7 +261,9 @@ export const Sidebar = () => {
                 <div>
                   <NoSsr>
                     <img
-                      src={me?.profileImage}
+                      src={
+                        "https://www.alchinlong.com/wp-content/uploads/2015/09/sample-profile.png"
+                      }
                       alt="Profile Image"
                       className="w-11 h-11 rounded-full object-cover inline-block"
                       style={{

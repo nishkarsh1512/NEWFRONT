@@ -1,5 +1,5 @@
 import React from "react"
-import { Icon, Paper } from "@mui/material"
+import { Paper } from "@mui/material"
 import {
   TrendingUp,
   TrendingDown,
@@ -93,6 +93,9 @@ const MetricCard: React.FC<MetricCardProps> = ({
     },
     title: {
       text: "Metrics",
+    },
+    credits: {
+      text: ""
     },
     xAxis: {
       categories: ["et", "knn", "best", "rf"],
