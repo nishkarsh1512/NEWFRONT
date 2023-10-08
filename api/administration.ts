@@ -1,7 +1,7 @@
 import axios from "axios"
 import { IUser } from "../types"
 
-const URL = "http://103.154.184.52:4000"
+const URL = "http://localhost:4000"
 
 const getUsers = async ({
   setUsers,
@@ -32,10 +32,7 @@ const registerUser = async ({
   }
 }): Promise<any> => {
   try {
-    const response = await axios.post(
-      `${URL}api/threshold/register`,
-      user
-    )
+    const response = await axios.post(`${URL}/api/threshold/register`, user)
 
     return response.data
   } catch (error) {
@@ -45,11 +42,7 @@ const registerUser = async ({
 
 const deleteUser = async ({ userId }: { userId: string }): Promise<any> => {
   try {
-    const response = await axios.delete(
-      `${URL}api/users/${userId}`
-    )
-
-    console.log({ response })
+    const response = await axios.delete(`${URL}/api/users/${userId}`)
 
     return response.data
   } catch (error) {

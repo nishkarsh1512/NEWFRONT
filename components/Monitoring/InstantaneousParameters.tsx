@@ -65,11 +65,6 @@ const InstantaneousParameters: React.FC<{ data: any[] }> = (props) => {
   const { isFetching, refetch: loadData } = useQuery(
     ["gaugeData"],
     async ({ signal }) => {
-      console.log({
-        start_time: startTime,
-        end_time: moment(startTime).add(1, "hours").format(),
-        asset_id: selectedDevice?.asset_id,
-      })
       return await axiosConfig({
         method: "put",
         url: "",
@@ -86,7 +81,6 @@ const InstantaneousParameters: React.FC<{ data: any[] }> = (props) => {
       refetchOnReconnect: false,
       enabled: false,
       onSuccess: (data) => {
-        console.log({ gaugeData: data })
         setGaugeData(data)
       },
       onError: (err) => {
@@ -134,7 +128,6 @@ const InstantaneousParameters: React.FC<{ data: any[] }> = (props) => {
       const floatArray6: number[] = stringArray6.map((str) => parseFloat(str))
       const floatArray7: number[] = stringArray7.map((str) => parseFloat(str))
 
-      console.log(floatArray)
       setMyArray(floatArray)
       setMyArray2(floatArray2)
       setMyArray3(floatArray3)

@@ -49,6 +49,8 @@ import { useContext } from "react"
 import { AppContext } from "./AppContext"
 import { CopyleftOff } from "tabler-icons-react"
 import ExportingModule from "highcharts/modules/exporting"
+// @ts-ignore
+import exportToXLSX from "../../utility/exportToXlsx"
 
 let interval: NodeJS.Timeout | undefined
 
@@ -68,8 +70,7 @@ if (typeof Highcharts === "object") {
   HighChartsData(Highcharts)
   HighChartsAccessibility(Highcharts)
 }
-///////////////////////////
-//////////////////////////
+
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -83,17 +84,13 @@ const style = {
   px: 4,
   pb: 3,
 }
-/////////////////
-////////////////////
-/////////
-const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
-  /////////////////////////////////////////////////////////
 
-  //////////////////////////////////////////////////////////
+const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
   const [progress, setProgress] = React.useState(0)
   const [buffer, setBuffer] = React.useState(10)
 
   const progressRef = React.useRef(() => {})
+
   React.useEffect(() => {
     progressRef.current = () => {
       if (progress > 100) {
@@ -102,19 +99,16 @@ const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
       } else {
         const diff = Math.random() * 10
         const diff2 = Math.random() * 10
+        
         setProgress(progress + diff)
         setBuffer(progress + diff + diff2)
       }
     }
   })
 
-  ///////////////////////////////////////////////////////
-  /////////////////////////////////////////
-
   const [axis, setAxis] = useState<string[]>(["X-Axis"])
   const [feature, setFeature] = useState("Acceleration Time Waveform")
 
-  // const { setTimeWaveForm, timeWaveForm } = useDataStore()
   const { selectedDevice } = useDeviceStore()
   const [isRealtime, setIsRealtime] = useState(true)
   const { myBoolean, setMyBoolean } = useContext(AppContext)
@@ -124,11 +118,6 @@ const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
     console.log("myvariuable")
   }
 
-  //////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////
   const [open, setOpen] = React.useState(false)
   const [opens, setOpens] = React.useState(false)
   const [myArray, setMyArray] = useState<number[]>([12, 23, 65])
@@ -232,7 +221,6 @@ const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
     }
   }, [axis])
   /////
-  /////
 
   const stopTimer = () => {
     if (interval) {
@@ -240,70 +228,6 @@ const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
       interval = undefined // Reset the interval variable
     }
   }
-
-  //////////////very vey IMPORTANT CODE , PLEASE TAKE A LOOK  AT THIS
-  // useEffect(() => {
-  //   setOpen(false)
-  //   if (props.data[0].name[0]) {
-  //     //////////////////////////////////////////
-  //     const startTimer = () => {
-  //       interval = setInterval(() => {
-  //         setOpen(false)
-  //         // Code to run every second
-  //         const article = { title: h1.asset_id }
-  //         axios
-  //           .post("http://localhost:4000/api/threshold/update", article)
-  //           .then((response) => {
-  //             console.log("HERE I M PRINTING RESPONSE")
-  //             const copy = [...h1["x_rms_acl"]]
-  //             const copy2 = [...h1["y_rms_acl"]]
-  //             const copy3 = [...h1["z_rms_acl"]]
-  //             const copy4 = [...h1["timeup"]]
-  //             copy.push(response.data[0].x_rms_acl[0])
-  //             copy2.push(response.data[0].y_rms_acl[0])
-  //             copy3.push(response.data[0].z_rms_acl[0])
-  //             copy4.push(response.data[0].timeup[0])
-
-  //             const copyFloatArray: number[] = copy.map((str) =>
-  //               parseFloat(str)
-  //             )
-  //             const copyFloatArray2: number[] = copy2.map((str) =>
-  //               parseFloat(str)
-  //             )
-  //             const copyFloatArray3: number[] = copy3.map((str) =>
-  //               parseFloat(str)
-  //             )
-  //             console.log(isRealtime)
-  //             console.log(isRealtime)
-
-  //             console.log(isRealtime)
-
-  //             console.log(isRealtime)
-  //             console.log(isRealtime)
-
-  //             if (isRealtime) {
-  //               setMyArray(copyFloatArray)
-  //               setMyArray2(copyFloatArray2)
-  //               setMyArray3(copyFloatArray3)
-  //               setMyString(copy4)
-  //             } else {
-  //               console.log("sorry bro")
-  //             }
-  //             console.log("HERE I M PRINTING RESPONSE")
-  //             setOpen(true)
-  //           })
-
-  //         console.log("we have done it")
-  //       }, 40000)
-  //     }
-  //     startTimer()
-  //     return () => {
-  //       clearInterval(interval)
-  //     }
-  //   } else {
-  //     return
-  //   }
-  // }, [props.data])
 
   const options = (
     x_axis: boolean,
@@ -337,8 +261,10 @@ const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
       menuItemDefinitions: {
         // Custom definition
         label: {
-          onclick: () => {},
-          text: "Show label",
+          onclick: () => {
+            console.log("here")
+          },
+          text: "Download XLSX",
         },
       },
     },
@@ -362,30 +288,7 @@ const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
         text: `<p class="font-semibold text-gray-400">${y_label}</p>`,
       },
     },
-    // xAxis: {
-    //   type: "category",
-    //   labels: {
-    //     // align: "right",
-    //     // x: 45,
-    //     step: 20,
-    //   },
-    // },
-    // chart: {
-    //   zoomType: "x",
-    //   resetZoomButton: {
-    //     theme: {
-    //       fill: "rgb(229 231 235)",
-    //       stroke: "none",
-    //       color: "black",
-    //       r: 4,
-    //     },
-    //     position: {
-    //       align: "right",
-    //       x: -10,
-    //       y: 10,
-    //     },
-    //   },
-    // },
+
     credits: {
       enabled: false,
     },
@@ -423,8 +326,7 @@ const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
       },
       {
         name: "X AXIS",
-        data: isEnabled ? myArray5 : myArray, //////////////////////////////checkpoint/////////////
-        type: "spline",
+        data: isEnabled ? myArray5 : myArray,
         color: "#1340E8",
         tooltip: {
           valueDecimals: 2,
@@ -453,50 +355,6 @@ const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
       },
     ],
   })
-
-  // const options: Highcharts.Options = {
-  //   title: {
-  //     text: "My chart",
-  //   },
-  //   series: [
-  //     {
-  //       name: "X AXIS",
-  //       data: myArray, //////////////////////////////checkpoint/////////////
-  //       type: "spline",
-  //       color: "#1340E8",
-  //       tooltip: {
-  //         valueDecimals: 2,
-  //       },
-  //       // visible: x_axis,
-  //     },
-  //     {
-  //       name: "Y AXIS",
-  //       data: myArray2,
-  //       type: "spline",
-  //       color: "#31E802",
-  //       tooltip: {
-  //         valueDecimals: 2,
-  //       },
-  //       // visible: y_axis,
-  //     },
-  //     {
-  //       name: "Z AXIS",
-  //       data: myArray3,
-  //       type: "spline",
-  //       color: "#FF0022",
-  //       tooltip: {
-  //         valueDecimals: 2,
-  //       },
-  //       // visible: z_axis,
-  //     },
-  //   ],
-  // }
-
-  //////////////////////////////////////////////////
-  //////////////////////////////////////////////////
-  /////////////////////////////////////////////
-  ////////////////////////////////////////////
-  ///////////////////////////////////////////////
 
   const {
     tw_startTime: startTime,
@@ -1110,6 +968,7 @@ const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
           containerProps={{ style: { height: "42.5rem" } }}
           highcharts={Highcharts}
           options={options(
+
             axis.includes("X-Axis"),
             axis.includes("Y-Axis"),
             axis.includes("Z-Axis"),
@@ -1125,6 +984,7 @@ const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
             })`
           )}
         />
+
       </div>
       <Snackbar open={open} autoHideDuration={6000}>
         <Alert severity="success" sx={{ width: "100%" }}>

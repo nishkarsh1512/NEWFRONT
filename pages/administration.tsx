@@ -89,9 +89,7 @@ const columns: GridColDef[] = [
       return (
         <div className="image flex gap-2 items-center ml-5">
           <img
-            src={
-              "https://www.alchinlong.com/wp-content/uploads/2015/09/sample-profile.png"
-            }
+            src="https://www.alchinlong.com/wp-content/uploads/2015/09/sample-profile.png"
             className="rounded-full w-[50px] h-[50px] object-cover"
             alt="user profile image"
           />
@@ -193,12 +191,17 @@ const columns: GridColDef[] = [
     headerAlign: "center",
     renderCell: (cellValues) => (
       <div className="">
-        <IconButton aria-label="delete" className="text-lightBlue">
+        <IconButton
+          aria-label="delete"
+          className="text-lightBlue"
+          style={{ color: "#1340E8" }}
+        >
           <EditIcon />
         </IconButton>
         <IconButton
           aria-label="delete"
           className="text-infoCardDarkRed"
+          style={{ color: "#FF0022" }}
           onClick={() => cellValues.formattedValue.delete()}
         >
           <DeleteIcon />

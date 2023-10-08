@@ -238,6 +238,8 @@ const DevicePanel = ({ createCard = (part: any[]) => {} }: dataFormProps) => {
         }
       }
       const article = { title: selectedDevice?.asset_id }
+
+      console.log({ title: selectedDevice?.asset_id })
       axios
         .post("http://103.154.184.52:4000/api/threshold/rms", article)
         .then((response) => {

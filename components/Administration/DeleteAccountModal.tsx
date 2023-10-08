@@ -28,9 +28,10 @@ const DeleteAccountModal = ({
   const handleDeleteAccount = async () => {
     if (selectedUser?._id) {
       setIsDeleting(true)
+
       const res = await deleteUser({ userId: selectedUser?._id })
 
-      setIsDeleting(true)
+      setIsDeleting(false)
 
       if (res) {
         refetchUsers()
@@ -40,8 +41,6 @@ const DeleteAccountModal = ({
       setSelectedUser(undefined)
     }
   }
-
-  console.log({ selectedUser })
 
   return (
     <Modal
@@ -82,12 +81,14 @@ const DeleteAccountModal = ({
             variant="contained"
             className="bg-infoCardDarkRed hover:bg-infoCardDarkRed px-7"
             onClick={handleDeleteAccount}
+            style={{ backgroundColor: "#FF0022" }}
           >
             {isDeleting ? "Deleting..." : "Yes"}
           </Button>
           <Button
             variant="outlined"
             className="text-infoCardDarkRed border-gray-300 hover:border-gray-300 px-7"
+            style={{ color: "#FF0022", borderColor: "#FF0022" }}
             onClick={() => {
               setDelAccModalActive(false)
               setSelectedUser(undefined)
