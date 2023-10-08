@@ -7,44 +7,28 @@ import InstantaneousParameters from "../components/Monitoring/InstantaneousParam
 import MaintenanceIndex from "../components/Monitoring/MaintenanceIndex"
 import TrendHistory from "../components/Monitoring/TimeWaveformChart"
 import DashboardLayout from "../layout/dashboard"
-import MoreVertIcon from "@mui/icons-material/MoreVert"
-import ContentCopyIcon from "@mui/icons-material/ContentCopy"
-import useDeviceStore from "../store/device"
-import { CopyToClipboard } from "react-copy-to-clipboard"
-import { Button, Tooltip } from "@mui/material"
-import { showNotification } from "@mantine/notifications"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { AppProvider } from "../components/Monitoring/AppContext"
-import axios from "axios"
-
-const test = []
-
-///////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////
+import useRmsData from "../api/hooks/charts/useRmsData"
 
 const Monitoring = () => {
+  const {
+    data: rmsData,
+    isLoading: isRmsDataLoading,
+    isError: isRmsDataError,
+  } = useRmsData()
+
+  console.log({ rmsData, isRmsDataError, isRmsDataLoading })
+
   const [sample, setSample] = useState<{ name: any[] }>({
     name: [],
   })
+
   const generateCard = (part: any[]) => {
-    console.log("card generated")
-    console.log(part)
     setSample({ name: part })
-    console.log("generate card")
   }
 
-  ///////////////////////////////////////////////////////TIMER FUNCTION TEST
-  ///////////////////////////////////////////////////
-  /////////////////////////////////////////////////
-  ////////////////////////////////////////////////
-
-  /////////////////////////////////////////////////
-  //////////////////////////////////////////////////
-  ///////////////////////////////////////////
   const [myBoolean, setMyBoolean] = useState(false)
-  ////////////////////////////////////
-  console.log(sample)
   return (
     <DashboardLayout>
       <AppProvider value={{ myBoolean, setMyBoolean }}>
@@ -55,6 +39,7 @@ const Monitoring = () => {
             content="initial-scale=1.0, width=device-width"
           />
         </Head>
+
         <div className="grid grid-cols-4 gap-4 py-5">
           <div className="flex-col flex col-span-3 gap-4 ">
             <TrendHistory data={[sample]} />

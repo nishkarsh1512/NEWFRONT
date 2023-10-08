@@ -66,11 +66,7 @@ const AdministrationHeader = () => {
             onClick={handleClick}
           >
             <img
-              src={
-                me
-                  ? me?.profileImage
-                  : "https://www.alchinlong.com/wp-content/uploads/2015/09/sample-profile.png"
-              }
+              src="https://www.alchinlong.com/wp-content/uploads/2015/09/sample-profile.png"
               style={{ borderRadius: "50%" }}
               alt="profile picture"
               className="w-[40px] h-[40px] object-cover"

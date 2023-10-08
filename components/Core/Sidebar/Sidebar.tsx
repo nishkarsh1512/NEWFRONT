@@ -21,14 +21,9 @@ import {
   DialogTitle,
 } from "@mui/material"
 import IIT from "../../../assets/images/iit-logo.png"
-import Image from "next/image"
 
 export const Sidebar = () => {
-  console.log("masala magic")
-  console.log(useAppStateContext()?.logoutModalActive)
   const context = useAppStateContext() // Get the entire context object
-
-  console.log("masala magic")
 
   const router = useRouter()
   const [collapseIconActive, setCollapseIconActive] = useState(false)
@@ -104,9 +99,6 @@ export const Sidebar = () => {
     )
 
   const impFunc = () => {
-    console.log("clickkkkkkked")
-    console.log("clickkkkkkkkkkked")
-    console.log(myBoolean)
     setMyBoolean(true)
   }
 

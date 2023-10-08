@@ -74,15 +74,6 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
   const [temp, setTemp] = useState<number[]>([])
   const [temp1, setTemp1] = useState<number[]>([])
   const [temp2, setTemp2] = useState<number[]>([])
-  console.log("guys")
-  console.log("guys")
-  console.log("guys")
-  console.log("guys")
-  console.log(h1)
-  console.log("guys")
-  console.log("guys")
-  console.log("guys")
-  console.log("guys")
   const { myBoolean, setMyBoolean } = useContext(AppContext)
   const [axis, setAxis] = useState<string[]>(["X-Axis"])
   const [feature, setFeature] = useState("Acceleration")
@@ -129,33 +120,13 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
   }, [props.data, filter])
 
   const stateChanger = () => {
-    console.log("state change")
     setUseFirstOptions(true)
-    setFeature("Acceleration")
     setVisit(false)
     setAxis(["X-Axis"])
   }
 
   const toggleBoolean = () => {
     setMyBoolean(true)
-    console.log("myvariuable")
-  }
-
-  const hi = () => {
-    console.log("damn")
-    console.log("damn")
-
-    console.log("damn")
-
-    console.log("damn")
-
-    console.log(temp)
-    console.log(feature)
-    console.log("damn")
-
-    console.log("damn")
-
-    console.log("damn")
   }
 
   const options = (
@@ -238,19 +209,6 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
                 setTemp1(FFT_acc_y)
                 setTemp2(FFT_acc_z)
                 setUseFirstOptions(false)
-
-                console.log("button clicked")
-                console.log("button clicked")
-                console.log("button clicked")
-                console.log("button clicked")
-                console.log(FFT_acc_x)
-
-                console.log("button clicked")
-                console.log("button clicked")
-                console.log("button clicked")
-
-                console.log("button clicked")
-                /////////////////////////////////////166
               } else {
                 setIndex(this.x)
                 const myArray1 = JSON.parse(
@@ -451,17 +409,9 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
                         .then((response) => {
                           toggleBoolean()
                           setIsRealtime(false)
-                          console.log("check new data")
                           console.log(response.data)
-                          console.log("check new data")
                           setFillArray(response.data[0].results)
                           setUpdatedArray(response.data[0].start_times)
-
-                          /////////////////////////////////
-                          /////////////////////////////////////
-                          /////////////////////////////////
-                          /////////////////////////////////////
-
                           setIsRealtime(false)
                           setOpen(true)
                           setOpens(false)
@@ -472,8 +422,7 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
                             error
                           )
                         })
-                    }, 30000) // 30 seconds delay
-                    ////code goes here
+                    }, 30000)
                   } else {
                     showNotification({
                       title: "User notification",
@@ -507,7 +456,6 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
               <RefreshOutlinedIcon />
             </Button>
           </Tooltip>
-          {/* //////////////////////// */}
 
           <FormControlLabel
             className="relative right-1"
@@ -585,20 +533,12 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
                     key={item}
                     onClick={() => {
                       if (item === "Velocity") {
-                        // Call your function here
                         if (filter) {
-                          console.log("velocity clicked")
-                          console.log("velocity clicked")
-
                           console.log(feature)
                           setIsEnabled(true)
                           setTemp(fill_X_vel)
                           setTemp1(fill_Y_vel)
                           setTemp2(fill_Z_vel)
-
-                          console.log("velocity clicked")
-                          console.log("velocity clicked")
-                          // const fil = { ...fillArray[0] }
                         } else {
                           const myArray = JSON.parse(
                             h1.results[index].data["X-Axis Velocity FFT"]
@@ -619,10 +559,6 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
                       if (item === "Acceleration") {
                         // Call your function here
                         if (filter) {
-                          console.log("acc clicked")
-                          console.log("acc clicked")
-                          console.log(feature)
-
                           const data4 = [
                             ...fillArray[index].data["X-Axis Acceleration FFT"],
                           ]
@@ -647,12 +583,7 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
                           setTemp1(FFT_acc_y)
                           setTemp2(FFT_acc_z)
 
-                          console.log("accl clicked")
-                          console.log("acc clicked")
-                          ////////////////////////////
                           setIsEnabled(false)
-
-                          ///////////////////////////
                         } else {
                           const myArray = JSON.parse(
                             h1.results[index].data["X-Axis Acceleration FFT"]

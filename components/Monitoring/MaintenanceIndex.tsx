@@ -44,20 +44,6 @@ const InstantaneousParameters: React.FC<{ data: any[] }> = (props) => {
       const disconnectedVarr = 100 - fakeArray[0].operational
       const disconnectedAsString = "" + disconnectedVarr
       setDisconnected(disconnectedAsString)
-
-      console.log("hhhhhhhhhhhhhhhhhh")
-      console.log("hhhhhhhhhhhhhhhhhh")
-      console.log("hhhhhhhhhhhhhhhhhh")
-      console.log("hhhhhhhhhhhhhhhhhh")
-      console.log("hhhhhhhhhhhhhhhhhh")
-
-      console.log(h1["summary"])
-      console.log(fakeArray[0].warning)
-      console.log("hhhhhhhhhhhhhhhhhh")
-
-      console.log("hhhhhhhhhhhhhhhhhh")
-      console.log("hhhhhhhhhhhhhhhhhh")
-      console.log("hhhhhhhhhhhhhhhhhh")
     }
   }, [props.data])
 
@@ -73,8 +59,7 @@ const InstantaneousParameters: React.FC<{ data: any[] }> = (props) => {
       enabled: false,
     },
     title: {
-      text:
-        '<div class="font-semibold relative right-10">Maintenance Index</div>',
+      text: '<div class="font-semibold relative right-10">Maintenance Index</div>',
       align: "left",
       margin: -10,
     },
