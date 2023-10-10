@@ -4,8 +4,6 @@ const URL = "http://localhost:4000"
 
 const getRmsData = async ({ asset_id }: { asset_id: string }) => {
   if (!!asset_id) {
-
-    console.log("here")
     const queryParams = new URLSearchParams({
       asset_id,
     })

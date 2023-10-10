@@ -4,21 +4,18 @@ import FileSaver from "file-saver"
 const exportToXLSX = ({
   jsonData,
   fileName,
+  headers,
 }: {
   jsonData: any[]
   fileName: string
+  headers: string[]
 }): void => {
-  console.log({ XLSX })
   const ws = XLSX.utils.book_new()
 
-  const header = Object.keys(jsonData[0])
-
-  console.log({ header })
-
-  XLSX.utils.sheet_add_aoa(ws, [["Name", "Age"]])
+  XLSX.utils.sheet_add_aoa(ws, [headers])
   XLSX.utils.sheet_add_json(ws, jsonData, { origin: "A2", skipHeader: true })
 
-  const wb = { Sheets: { data: ws }, SheetNames: [fileName] }
+  const wb = { Sheets: { data: ws }, SheetNames: ["data"] }
 
   const excelBuffer = XLSX.write(wb, {
     bookType: "xlsx",
@@ -30,7 +27,7 @@ const exportToXLSX = ({
     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   })
 
-  FileSaver.saveAs(finalData, "Data.xlsx")
+  FileSaver.saveAs(finalData, fileName)
 }
 
 export default exportToXLSX

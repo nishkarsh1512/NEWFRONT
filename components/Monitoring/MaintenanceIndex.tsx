@@ -1,4 +1,6 @@
-import HighchartsReact from "highcharts-react-official"
+import HighchartsReact, {
+  HighchartsReactRefObject,
+} from "highcharts-react-official"
 import Highcharts from "highcharts"
 import HighChartsExporting from "highcharts/modules/exporting"
 import HighChartsData from "highcharts/modules/data"
@@ -10,7 +12,12 @@ import HighChartsAccessibility from "highcharts/modules/accessibility"
 import HighChartsExportData from "highcharts/modules/export-data"
 import HighChartsMore from "highcharts/highcharts-more"
 import Property from "./Property"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import ExportMenu from "../Core/ExportMenu"
+import exportToImage from "../../utility/exportToImage"
+import exportToPdf from "../../utility/exportToPdf"
+import exportToXLSX from "../../utility/exportToXlsx"
+import html2canvas from "html2canvas"
 
 if (typeof Highcharts === "object") {
   HighChartsExporting(Highcharts)
@@ -25,12 +32,41 @@ if (typeof Highcharts === "object") {
 }
 
 const InstantaneousParameters: React.FC<{ data: any[] }> = (props) => {
+  const chartRef = useRef<HighchartsReactRefObject>(null)
+
   let h1 = { ...props.data[0].name[0] }
 
   const [operational, setOperational] = useState<string>("0")
   const [caution, setCaution] = useState<string>("0")
   const [warning, setWarning] = useState<string>("0")
   const [disconnected, setDisconnected] = useState<string>("0")
+
+  // Get Chart json data
+  const getChartJsonData = () => [
+    {
+      operational,
+      caution,
+      warning,
+      disconnected,
+    },
+  ]
+
+  const captureSnapshot = ({ id }: { id: string }) => {
+    const elementToCapture = document.getElementById(id)
+
+    if (elementToCapture) {
+      html2canvas(elementToCapture).then((canvas) => {
+        // Convert the canvas to a data URL
+        const dataURL = canvas.toDataURL("image/png")
+
+        // Create a download link for the image
+        const a = document.createElement("a")
+        a.href = dataURL
+        a.download = "snapshot.png"
+        a.click()
+      })
+    }
+  }
 
   useEffect(() => {
     if (props.data[0].name[0]) {
@@ -47,7 +83,6 @@ const InstantaneousParameters: React.FC<{ data: any[] }> = (props) => {
     }
   }, [props.data])
 
-  ////////////////////OPTIONS
   const maintenanceOptions = () => ({
     chart: {
       plotBackgroundColor: null,
@@ -56,6 +91,9 @@ const InstantaneousParameters: React.FC<{ data: any[] }> = (props) => {
       type: "pie",
     },
     credits: {
+      enabled: false,
+    },
+    exporting: {
       enabled: false,
     },
     title: {
@@ -111,13 +149,48 @@ const InstantaneousParameters: React.FC<{ data: any[] }> = (props) => {
     ],
   })
 
-  ////////////////////
-
   return (
-    <div className="bg-white rounded-lg pt-3 pb-3 px-4 overflow-hidden grid grid-cols-2 h-[65%]">
+    <div
+      className="bg-white rounded-lg pt-3 pb-3 px-4 overflow-hidden grid grid-cols-2 h-[65%]"
+      id="maintenance-index"
+    >
       <div className="col-span-2 block">
-        <div className="default">
+        <div className="default relative">
+          <ExportMenu
+            menuItems={[
+              {
+                label: "Download PNG",
+                onClick: () =>
+                  captureSnapshot({
+                    id: "maintenance-index",
+                  }),
+                image: "",
+              },
+              {
+                label: "Download PDF",
+                onClick: () =>
+                  exportToPdf({
+                    jsonData: getChartJsonData(),
+                    fileName: "maintenanceIndex.pdf",
+                    headers: [...Object.keys(getChartJsonData())],
+                  }),
+                image: "",
+              },
+              {
+                label: "Download XLSX",
+                onClick: () =>
+                  exportToXLSX({
+                    jsonData: getChartJsonData(),
+                    fileName: "maintenanceIndex.xlsx",
+                    headers: [...Object.keys(getChartJsonData()[0])],
+                  }),
+                image: "",
+              },
+            ]}
+            position="right-[-9px] top-[6px]"
+          />
           <HighchartsReact
+            ref={chartRef}
             containerProps={{ style: { height: "350px" } }}
             highcharts={Highcharts}
             options={maintenanceOptions()}
