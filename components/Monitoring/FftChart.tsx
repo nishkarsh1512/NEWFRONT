@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react"
-import HighchartsReact from "highcharts-react-official"
+import React, { useState, useEffect, useRef } from "react"
+import HighchartsReact, {
+  HighchartsReactRefObject,
+} from "highcharts-react-official"
 import Highcharts from "highcharts"
 import HighChartsExporting from "highcharts/modules/exporting"
 import HighChartsData from "highcharts/modules/data"
@@ -33,6 +35,11 @@ import { useContext } from "react"
 import { AppContext } from "./AppContext"
 import LinearProgress from "@mui/material/LinearProgress"
 import Modal from "@mui/material/Modal"
+import { clsx } from "clsx"
+import exportToXLSX from "../../utility/exportToXlsx"
+import ExportMenu from "../Core/ExportMenu"
+import exportToImage from "../../utility/exportToImage"
+import exportToPdf from "../../utility/exportToPdf"
 
 if (typeof Highcharts === "object") {
   HighChartsExporting(Highcharts)
@@ -90,7 +97,47 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
   const [fillArray, setFillArray] = useState<any[]>([])
   const [visit, setVisit] = React.useState(false)
 
-  ///////////////////////////////////////////////
+  const chartRef = useRef<HighchartsReactRefObject>(null)
+
+  console.log({ data: props.data })
+
+  // Get Chart json data
+  const getChartJsonData = () => {
+    const data = props.data[0].name.length > 0 ? props.data[0].name[0] : null
+
+    if (!!data) {
+      const jsonData = data?.timeup.map((time: string, index: number) => {
+        const x_fft_acl =
+          data?.FFT_xacc.length > index ? data?.FFT_xacc[index] : "null"
+
+        const y_fft_acl =
+          data?.FFT_yacc.length > index ? data?.FFT_yacc[index] : "null"
+
+        const z_fft_acl =
+          data?.FFT_zacc.length > index ? data?.FFT_zacc[index] : "null"
+
+        const x_fft_vel =
+          data?.FFT_xvel.length > index ? data?.FFT_xvel[index] : "null"
+
+        const y_fft_vel =
+          data?.FFT_yvel.length > index ? data?.FFT_yvel[index] : "null"
+
+        const z_fft_vel =
+          data?.FFT_zvel.length > index ? data?.FFT_zvel[index] : "null"
+
+        return {
+          x_fft_acl,
+          y_fft_acl,
+          z_fft_acl,
+          x_fft_vel,
+          y_fft_vel,
+          z_fft_vel,
+        }
+      })
+
+      return jsonData
+    }
+  }
 
   const [progress, setProgress] = React.useState(0)
   const [buffer, setBuffer] = React.useState(10)
@@ -125,6 +172,8 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
     setAxis(["X-Axis"])
   }
 
+  console.log({ visit })
+
   const toggleBoolean = () => {
     setMyBoolean(true)
   }
@@ -140,6 +189,9 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
       text: `<div class="font-semibold relative right-10 capitalize">${titles}</div>`,
       align: "left",
       margin: 160,
+    },
+    exporting: {
+      enabled: false,
     },
     credits: {
       enabled: false,
@@ -649,8 +701,51 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
         </div>
       </div>
       {/* SPLINE CHART  */}
-      <div className="relative bottom-40">
+      <div
+        className={clsx(
+          visit ? " bottom-[11rem]" : "bottom-[8rem]",
+          "relative"
+        )}
+      >
+        {visit && (
+          <ExportMenu
+            menuItems={[
+              {
+                label: "Download PNG",
+                onClick: () =>
+                  exportToImage({
+                    chartRef,
+                    fileName: "fft.png",
+                  }),
+                image: "",
+              },
+              {
+                label: "Download PDF",
+                onClick: () =>
+                  exportToPdf({
+                    jsonData: getChartJsonData(),
+                    fileName: "fft.pdf",
+                    headers: [...Object.keys(getChartJsonData()[0])],
+                  }),
+                image: "",
+              },
+              {
+                label: "Download XLSX",
+                onClick: () =>
+                  exportToXLSX({
+                    jsonData: getChartJsonData(),
+                    fileName: "fft.xlsx",
+                    headers: [...Object.keys(getChartJsonData()[0])],
+                  }),
+                image: "",
+              },
+            ]}
+            position="right-[-9px] top-[6px]"
+          />
+        )}
+
         <HighchartsReact
+          ref={chartRef}
           containerProps={{ style: { height: "42.5rem" } }}
           highcharts={Highcharts}
           options={options(

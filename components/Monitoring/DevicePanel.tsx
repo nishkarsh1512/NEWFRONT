@@ -113,122 +113,22 @@ const DevicePanel = ({ createCard = (part: any[]) => {} }: dataFormProps) => {
     setOpen(true)
     setLoading(true)
     setString(selectedDevice.asset_id)
-    console.log("device changed ")
-    console.log("device changed ")
 
-    console.log("device changed ")
-
-    console.log("device changed ")
-
-    console.log("device changed ")
-
-    console.log("device changed ")
-    console.log("and id is ")
     console.log(selectedDevice.asset_id)
 
     console.log("device changed ")
 
-    console.log("device changed ")
-
-    console.log("device changed ")
-
-    console.log("device changed ")
-
-    console.log("device changed ")
-
     const article = { title: selectedDevice?.asset_id }
+
     axios
-      .post("http://103.154.184.52:4000/api/threshold/rms", article)
+      .get(`http://localhost:4000/api/threshold/rms?asset_id=${article.title}`)
       .then((response) => {
         setPart(response.data)
         setLoading(false)
       })
   }, [selectedDevice])
 
-  ///////////////////////////////////ADDED CODE IS HERE
-
-  // useEffect(() => {
-  //   //////////////////////////////////////////
-  //   const startTimer = () => {
-  //     console.log("timer is running abhi bhi")
-  //     if (myBoolean) {
-  //       console.log(myBoolean)
-  //       return () => {
-  //         clearInterval(interval)
-  //       }
-  //     }
-  //     interval = setInterval(() => {
-  //       if (myBoolean) {
-  //         return () => {
-  //           clearInterval(interval)
-  //         }
-  //       }
-  //       // Code to run every second
-  //       const article = { title: selectedDevice?.asset_id }
-  //       axios
-  //         .post("http://localhost:4000/api/threshold/rms", article)
-  //         .then((response) => {
-  //           console.log("i want to chevk thjis response")
-  //           console.log("i want to chevk this response")
-  //           console.log("i want to chevk this response")
-  //           console.log(response.data[0].asset_id)
-  //           console.log(selectedDevice.asset_id)
-  //           console.log(string)
-  //           console.log("i want to chevk this response")
-  //           console.log("i want to chevk thiconsole.logs response")
-  //           console.log("i want to chevk this response")
-  //           console.log("i want to chevk this response")
-
-  //           /////////////////////////////////////////////////
-  //           setOpens(false)
-  //           if (myBoolean) {
-  //             return () => {
-  //               clearInterval(interval)
-  //             }
-  //           }
-  //           if (!open && !myBoolean) {
-  //             if (
-  //               response.data[0].asset_id === selectedDevice.asset_id &&
-  //               string === response.data[0].asset_id
-  //             ) {
-  //               console.log("here is the checking response")
-  //               console.log("here is the checking response")
-  //               console.log("here is the checking response")
-  //               console.log(response.data[0].asset_id)
-  //               console.log(selectedDevice.asset_id)
-  //               console.log(string)
-  //               console.log("here is the checking response")
-  //               console.log("here is the checking response")
-  //               changesHandler(response.data)
-  //             } else {
-  //               console.log("this doesnt belong to your object")
-  //             }
-  //           } else {
-  //             return () => {
-  //               clearInterval(interval)
-  //             }
-  //           }
-  //           setOpens(true)
-  //         })
-  //     }, 40000)
-  //   }
-
-  //   const delayStart = () => {
-  //     setTimeout(startTimer, 9000)
-  //   }
-
-  //   if (selectedDevice) {
-  //     delayStart()
-  //   }
-
-  //   return () => {
-  //     clearInterval(interval)
-  //   }
-  // }, [selectedDevice, myBoolean])
-
   useEffect(() => {
-    // Your initial code here
-
     // Define a function that contains the code you want to run every 30 seconds
     const fetchData = () => {
       if (myBoolean) {
@@ -239,12 +139,12 @@ const DevicePanel = ({ createCard = (part: any[]) => {} }: dataFormProps) => {
       }
       const article = { title: selectedDevice?.asset_id }
 
-      console.log({ title: selectedDevice?.asset_id })
       axios
-        .post("http://103.154.184.52:4000/api/threshold/rms", article)
+        .get(
+          `http://localhost:4000/api/threshold/rms?asset_id=${article.title}`
+        )
         .then((response) => {
           changesHandler(response.data)
-          console.log("changes done")
         })
     }
 

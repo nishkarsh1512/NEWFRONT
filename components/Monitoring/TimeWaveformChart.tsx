@@ -1,5 +1,7 @@
 import React, { useState } from "react"
-import HighchartsReact from "highcharts-react-official"
+import HighchartsReact, {
+  HighchartsReactRefObject,
+} from "highcharts-react-official"
 import Highcharts from "highcharts"
 import HighChartsExporting from "highcharts/modules/exporting"
 import HighChartsData from "highcharts/modules/data"
@@ -8,12 +10,10 @@ import HighChartsPivotPoints from "highcharts/indicators/pivot-points"
 import HighChartsMacD from "highcharts/indicators/macd"
 import HighChartsMaP from "highcharts/modules/map"
 import HighChartsAccessibility from "highcharts/modules/accessibility"
-// import { trendHistoryOptions } from "../../utility/analytics"
 import Select from "@mui/material/Select"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker"
-import HistoryToggleOffOutlinedIcon from "@mui/icons-material/HistoryToggleOffOutlined"
 import {
   Box,
   FormControlLabel,
@@ -35,22 +35,16 @@ import useDeviceStore from "../../store/device"
 import useTimeStore from "../../store/time"
 import moment from "moment"
 import { showNotification } from "@mantine/notifications"
-// import { getAppendedTimeWaveFormArray } from "../../utility/utility"
-// import { ITimeWaveFormData } from "../../types/index"
 import { useEffect, useRef } from "react"
-import { RiContactsBookUploadLine } from "react-icons/ri"
 import axios from "axios"
 import Snackbar from "@mui/material/Snackbar"
 import MuiAlert, { AlertProps } from "@mui/material/Alert"
-
-import Stack from "@mui/material/Stack"
-import { stopTimer } from "./DevicePanel"
 import { useContext } from "react"
 import { AppContext } from "./AppContext"
-import { CopyleftOff } from "tabler-icons-react"
-import ExportingModule from "highcharts/modules/exporting"
-// @ts-ignore
 import exportToXLSX from "../../utility/exportToXlsx"
+import exportToPdf from "../../utility/exportToPdf"
+import ExportMenu from "../Core/ExportMenu"
+import exportToImage from "../../utility/exportToImage"
 
 let interval: NodeJS.Timeout | undefined
 
@@ -85,11 +79,56 @@ const style = {
   pb: 3,
 }
 
-const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
+interface Props {
+  data: any[]
+}
+
+const TimeWaveformChart = (props: Props) => {
+  const chartRef = useRef<HighchartsReactRefObject>(null)
+
   const [progress, setProgress] = React.useState(0)
   const [buffer, setBuffer] = React.useState(10)
 
   const progressRef = React.useRef(() => {})
+
+  // Get Chart json data
+  const getChartJsonData = () => {
+    const data = props.data[0].name.length > 0 ? props.data[0].name[0] : null
+
+    if (!!data) {
+      const jsonData = data?.timeup.map((time: string, index: number) => {
+        const x_rms_acl =
+          data?.x_rms_acl.length > index ? data?.x_rms_acl[index] : "null"
+
+        const y_rms_acl =
+          data?.y_rms_acl.length > index ? data?.y_rms_acl[index] : "null"
+
+        const z_rms_acl =
+          data?.z_rms_acl.length > index ? data?.z_rms_acl[index] : "null"
+
+        const x_rms_vel =
+          data?.x_rms_vel.length > index ? data?.x_rms_vel[index] : "null"
+
+        const y_rms_vel =
+          data?.y_rms_vel.length > index ? data?.y_rms_vel[index] : "null"
+
+        const z_rms_vel =
+          data?.z_rms_vel.length > index ? data?.z_rms_vel[index] : "null"
+
+        return {
+          x_rms_acl,
+          y_rms_acl,
+          z_rms_acl,
+          x_rms_vel,
+          y_rms_vel,
+          z_rms_vel,
+          timestamp: time,
+        }
+      })
+
+      return jsonData
+    }
+  }
 
   React.useEffect(() => {
     progressRef.current = () => {
@@ -99,7 +138,7 @@ const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
       } else {
         const diff = Math.random() * 10
         const diff2 = Math.random() * 10
-        
+
         setProgress(progress + diff)
         setBuffer(progress + diff + diff2)
       }
@@ -115,7 +154,6 @@ const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
 
   const toggleBoolean = () => {
     setMyBoolean(true)
-    console.log("myvariuable")
   }
 
   const [open, setOpen] = React.useState(false)
@@ -147,7 +185,6 @@ const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
   }
 
   const [myThreshold, setMyThreshold] = useState<any>({})
-  /////////////////////////////////////////
 
   useEffect(() => {
     setMyState(h1.asset_id)
@@ -191,8 +228,6 @@ const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
     }
   }, [props.data])
 
-  ////
-  /////
   useEffect(() => {
     const objs: any = {
       ...myThreshold[selectedDevice?.asset_id],
@@ -220,7 +255,6 @@ const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
       setWarning(obj3.warning)
     }
   }, [axis])
-  /////
 
   const stopTimer = () => {
     if (interval) {
@@ -241,32 +275,12 @@ const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
       align: "left",
       margin: 160,
     },
+
     // credits: {
     //   enabled: false,
     // },
     exporting: {
-      enabled: true, // Enable exporting
-      buttons: {
-        contextButton: {
-          menuItems: [
-            "downloadPNG",
-            "downloadJPEG",
-            "downloadPDF",
-            "separator",
-            "printChart",
-            "label",
-          ],
-        },
-      },
-      menuItemDefinitions: {
-        // Custom definition
-        label: {
-          onclick: () => {
-            console.log("here")
-          },
-          text: "Download XLSX",
-        },
-      },
+      enabled: false,
     },
     xAxis: {
       categories: myString,
@@ -325,6 +339,7 @@ const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
         visible: isEnabled, // Set to true to show the line
       },
       {
+        type: "line",
         name: "X AXIS",
         data: isEnabled ? myArray5 : myArray,
         color: "#1340E8",
@@ -964,11 +979,45 @@ const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
       </div>
       {/* SPLINE CHART  */}
       <div className="relative bottom-40">
+        <ExportMenu
+          menuItems={[
+            {
+              label: "Download PNG",
+              onClick: () =>
+                exportToImage({
+                  chartRef,
+                  fileName: "timewaveform.png",
+                }),
+              image: "",
+            },
+            {
+              label: "Download PDF",
+              onClick: () =>
+                exportToPdf({
+                  jsonData: getChartJsonData(),
+                  fileName: "timewaveform.pdf",
+                  headers: [...Object.keys(getChartJsonData()[0])],
+                }),
+              image: "",
+            },
+            {
+              label: "Download XLSX",
+              onClick: () =>
+                exportToXLSX({
+                  jsonData: getChartJsonData(),
+                  fileName: "timewaveform.xlsx",
+                  headers: [...Object.keys(getChartJsonData()[0])],
+                }),
+              image: "",
+            },
+          ]}
+          position="right-[-9px] top-[6px]"
+        />
         <HighchartsReact
+          ref={chartRef}
           containerProps={{ style: { height: "42.5rem" } }}
           highcharts={Highcharts}
           options={options(
-
             axis.includes("X-Axis"),
             axis.includes("Y-Axis"),
             axis.includes("Z-Axis"),
@@ -984,7 +1033,6 @@ const TimeWaveformChart: React.FC<{ data: any[] }> = (props) => {
             })`
           )}
         />
-
       </div>
       <Snackbar open={open} autoHideDuration={6000}>
         <Alert severity="success" sx={{ width: "100%" }}>

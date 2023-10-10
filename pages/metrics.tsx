@@ -11,7 +11,7 @@ import { Box } from "@mui/material"
 import useTimeStore from "../store/time"
 import Modal from "@mui/material/Modal"
 import LinearProgress from "@mui/material/LinearProgress"
-import HealthStatus from "../components/Metrics/HealthStatus"
+import HealthStatus from "../components/Metrics/HealthStatus/index"
 import InstantaneousHealth from "../components/Metrics/InstantaneousHealth"
 
 interface DataItem {
@@ -99,7 +99,7 @@ const Metrics: React.FC = () => {
       if (isRealtime) {
         const article = { title: selectedDevice.asset_id }
         axios
-          .post("http://103.154.184.52:4000/api/threshold/metrics", article)
+          .post("http://localhost:4000/api/threshold/metrics", article)
           .then((response) => {
             const etData: number[] = response.data[0].result.map(
               (item: DataItem) => item.et
@@ -122,8 +122,9 @@ const Metrics: React.FC = () => {
           startDate: startTime,
           endDate: endTime,
         }
+        console.log({ article })
         axios
-          .post("http://103.154.184.52:4000/api/threshold/check", article)
+          .post("http:localhost:4000/api/threshold/check", article)
           .then((response) => {
             console.log("point of attraction")
             console.log("point of attraction")
@@ -150,7 +151,7 @@ const Metrics: React.FC = () => {
       if (isRealtime) {
         const article = { title: selectedDevice.asset_id }
         axios
-          .post("http://103.154.184.52:4000/api/threshold/metrics", article)
+          .post("http://localhost:4000/api/threshold/metrics", article)
           .then((response) => {
             const knnData: number[] = response.data[0].result.map(
               (item: DataItem) => item.knn
@@ -174,7 +175,7 @@ const Metrics: React.FC = () => {
           endDate: endTime,
         }
         axios
-          .post("http://103.154.184.52:4000/api/threshold/check", article)
+          .post("http://localhost:4000/api/threshold/check", article)
           .then((response) => {
             console.log(response.data)
             const knnData: number[] = response.data.map(
@@ -196,7 +197,7 @@ const Metrics: React.FC = () => {
       if (isRealtime) {
         const article = { title: selectedDevice.asset_id }
         axios
-          .post("http://103.154.184.52:4000/api/threshold/metrics", article)
+          .post("http://localhost:4000/api/threshold/metrics", article)
           .then((response) => {
             const bpData: number[] = response.data[0].result.map(
               (item: DataItem) => item.bp
@@ -218,7 +219,7 @@ const Metrics: React.FC = () => {
           endDate: endTime,
         }
         axios
-          .post("http://103.154.184.52:4000/api/threshold/check", article)
+          .post("http://localhost:4000/api/threshold/check", article)
           .then((response) => {
             console.log(response.data)
             const bpData: number[] = response.data.map(
@@ -240,7 +241,7 @@ const Metrics: React.FC = () => {
       if (isRealtime) {
         const article = { title: selectedDevice.asset_id }
         axios
-          .post("http://103.154.184.52:4000/api/threshold/metrics", article)
+          .post("http://localhost:4000/api/threshold/metrics", article)
           .then((response) => {
             const rfData: number[] = response.data[0].result.map(
               (item: DataItem) => item.rf
@@ -263,8 +264,9 @@ const Metrics: React.FC = () => {
           startDate: startTime,
           endDate: endTime,
         }
+
         axios
-          .post("http://103.154.184.52:4000/api/threshold/check", article)
+          .post("http://localhost:4000/api/threshold/check", article)
           .then((response) => {
             console.log(response.data)
             const rfData: number[] = response.data.map(
@@ -293,7 +295,7 @@ const Metrics: React.FC = () => {
     console.log(selectedDevice.asset_id)
     const article = { title: selectedDevice.asset_id }
     axios
-      .post("http://103.154.184.52:4000/api/threshold/metrics", article)
+      .post("http://localhost:4000/api/threshold/metrics", article)
       .then((response) => {
         console.log(response.data)
         const etData: number[] = response.data[0].result.map(
@@ -356,11 +358,13 @@ const Metrics: React.FC = () => {
     ],
   }
 
+  console.log({ data, xLabels })
+
   const fetchData = () => {
     if (isRealtime) {
       const article = { title: selectedDevice.asset_id }
       axios
-        .post("http://103.154.184.52:4000/api/threshold/metrics", article)
+        .post("http://localhost:4000/api/threshold/metrics", article)
         .then((response) => {
           const etData: number[] = response.data[0].result.map(
             (item: DataItem) => item.et
@@ -424,6 +428,28 @@ const Metrics: React.FC = () => {
     set_tw_EndTime: setEndTime,
   } = useTimeStore()
 
+  const getJsonData = () => {
+    const temp = data.map((value, index) => ({
+      state: value,
+      timestamp: xLabels.length > index ? xLabels[index] : null,
+    }))
+
+    return {
+      all: [
+        ...temp,
+        { Health_Status: "0 = Healthy" },
+        { Health_Status: "1 = Looseness" },
+        { Health_Status: "2 = Misalignment" },
+        { Health_Status: "3 = Anomalous Vibration" },
+        { Health_Status: "4 = No RMS Values Found" },
+        { Health_Status: "5 = No Data Found" },
+      ],
+      data: [...temp],
+    }
+  }
+
+  console.log({ xLabels, data })
+
   return (
     <DashboardLayout>
       <div className="w-full overflow-y-scroll">
@@ -441,6 +467,7 @@ const Metrics: React.FC = () => {
             setIsRealtime={setIsRealtime}
             setxLabels={setxLabels}
             startTime={startTime}
+            jsonData={getJsonData()}
           />
           <br />
           <InstantaneousHealth />
