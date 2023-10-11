@@ -51,26 +51,11 @@ const Metrics: React.FC = () => {
   const [isRealtime, setIsRealtime] = useState<boolean>(true)
   const [opens, setOpens] = React.useState(true)
 
+  const [isLoading, setIsLoading] = useState(false)
+
   // Initial data array
   const [data, setData] = useState<number[]>([1, 2, 3, 4, 5])
   const [xLabels, setxLabels] = useState<string[]>([" ", " ", " ", " ", " "])
-  const [progress, setProgress] = React.useState(0)
-  const [buffer, setBuffer] = React.useState(10)
-
-  const progressRef = React.useRef(() => {})
-  React.useEffect(() => {
-    progressRef.current = () => {
-      if (progress > 100) {
-        setProgress(0)
-        setBuffer(10)
-      } else {
-        const diff = Math.random() * 10
-        const diff2 = Math.random() * 10
-        setProgress(progress + diff)
-        setBuffer(progress + diff + diff2)
-      }
-    }
-  })
 
   const yLabels: Record<number, string> = {
     0: "Healthy",
@@ -90,7 +75,7 @@ const Metrics: React.FC = () => {
     handleChange(temp)
   }
 
-  const handleChange = (updatedValue: string) => {
+  const handleChange = async (updatedValue: string) => {
     console.log("value of age is")
     console.log(updatedValue)
     setOpens(true)
@@ -98,24 +83,34 @@ const Metrics: React.FC = () => {
     if (updatedValue == "10") {
       if (isRealtime) {
         const article = { title: selectedDevice.asset_id }
-        axios
-          .post("http://localhost:4000/api/threshold/metrics", article)
-          .then((response) => {
-            const etData: number[] = response.data[0].result.map(
-              (item: DataItem) => item.et
-            )
-            const xLabels: string[] = response.data[0].result.map(
-              (item: DataItem) => item.start_time
-            )
-            console.log("printing et data")
-            console.log(etData)
-            console.log(response.data[0].result)
 
-            setData(etData)
-            setxLabels(xLabels)
+        setIsLoading(true)
 
-            setOpens(false)
-          })
+        try {
+          const response = await axios.post(
+            "http://localhost:4000/api/threshold/metrics",
+            article
+          )
+
+          setIsLoading(false)
+
+          const etData: number[] = response.data[0].result.map(
+            (item: DataItem) => item.et
+          )
+          const xLabels: string[] = response.data[0].result.map(
+            (item: DataItem) => item.start_time
+          )
+          console.log("printing et data")
+          console.log(etData)
+          console.log(response.data[0].result)
+
+          setData(etData)
+          setxLabels(xLabels)
+
+          setOpens(false)
+        } catch (error) {
+          setIsLoading(false)
+        }
       } else if (!isRealtime) {
         const article = {
           title: selectedDevice?.asset_id,
@@ -123,141 +118,197 @@ const Metrics: React.FC = () => {
           endDate: endTime,
         }
         console.log({ article })
-        axios
-          .post("http:localhost:4000/api/threshold/check", article)
-          .then((response) => {
-            console.log("point of attraction")
-            console.log("point of attraction")
 
-            console.log(response.data)
-            const etData: number[] = response.data.map(
-              (item: DataItem) => item.et
-            )
+        setIsLoading(true)
 
-            const xLabels: string[] = response.data.map(
-              (item: DataItem) => item.start_time
-            )
+        try {
+          const response = await axios.post(
+            "http:localhost:4000/api/threshold/check",
+            article
+          )
 
-            setxLabels(xLabels)
-            setData(etData)
-            console.log(etData)
-            setFilt(response.data[0])
-            console.log("point of attraction")
-            setOpens(false)
-            console.log("point of attraction")
-          })
+          setIsLoading(false)
+
+          console.log(response.data)
+          const etData: number[] = response.data.map(
+            (item: DataItem) => item.et
+          )
+
+          const xLabels: string[] = response.data.map(
+            (item: DataItem) => item.start_time
+          )
+
+          setxLabels(xLabels)
+          setData(etData)
+          console.log(etData)
+          setFilt(response.data[0])
+          console.log("point of attraction")
+          setOpens(false)
+          console.log("point of attraction")
+        } catch (error) {
+          setIsLoading(false)
+        }
       }
     } else if (updatedValue == "20") {
       if (isRealtime) {
         const article = { title: selectedDevice.asset_id }
-        axios
-          .post("http://localhost:4000/api/threshold/metrics", article)
-          .then((response) => {
-            const knnData: number[] = response.data[0].result.map(
-              (item: DataItem) => item.knn
-            )
-            console.log("printing knn data")
-            console.log(knnData)
-            console.log(response.data[0].result)
-            const xLabels: string[] = response.data[0].result.map(
-              (item: DataItem) => item.start_time
-            )
 
-            setData(knnData)
-            setxLabels(xLabels)
+        setIsLoading(true)
 
-            setOpens(false)
-          })
+        try {
+          const response = await axios.post(
+            "http://localhost:4000/api/threshold/metrics",
+            article
+          )
+
+          setIsLoading(false)
+
+          const knnData: number[] = response.data[0].result.map(
+            (item: DataItem) => item.knn
+          )
+          console.log("printing knn data")
+          console.log(knnData)
+          console.log(response.data[0].result)
+          const xLabels: string[] = response.data[0].result.map(
+            (item: DataItem) => item.start_time
+          )
+
+          setData(knnData)
+          setxLabels(xLabels)
+
+          setOpens(false)
+        } catch (error) {
+          setIsLoading(false)
+        }
       } else if (!isRealtime) {
         const article = {
           title: selectedDevice?.asset_id,
           startDate: startTime,
           endDate: endTime,
         }
-        axios
-          .post("http://localhost:4000/api/threshold/check", article)
-          .then((response) => {
-            console.log(response.data)
-            const knnData: number[] = response.data.map(
-              (item: DataItem) => item.knn
-            )
 
-            const xLabels: string[] = response.data.map(
-              (item: DataItem) => item.start_time
-            )
+        setIsLoading(true)
 
-            setxLabels(xLabels)
-            setData(knnData)
-            console.log(knnData)
-            setFilt(response.data[0])
-            setOpens(false)
-          })
+        try {
+          const response = await axios.post(
+            "http://localhost:4000/api/threshold/check",
+            article
+          )
+
+          setIsLoading(false)
+
+          console.log(response.data)
+          const knnData: number[] = response.data.map(
+            (item: DataItem) => item.knn
+          )
+
+          const xLabels: string[] = response.data.map(
+            (item: DataItem) => item.start_time
+          )
+
+          setxLabels(xLabels)
+          setData(knnData)
+          console.log(knnData)
+          setFilt(response.data[0])
+          setOpens(false)
+        } catch (error) {
+          setIsLoading(false)
+        }
       }
     } else if (updatedValue == "40") {
       if (isRealtime) {
         const article = { title: selectedDevice.asset_id }
-        axios
-          .post("http://localhost:4000/api/threshold/metrics", article)
-          .then((response) => {
-            const bpData: number[] = response.data[0].result.map(
-              (item: DataItem) => item.bp
-            )
-            console.log("printing bp data")
-            console.log(bpData)
-            console.log(response.data[0].result)
-            const xLabels: string[] = response.data[0].result.map(
-              (item: DataItem) => item.start_time
-            )
-            setData(bpData)
-            setxLabels(xLabels)
-            setOpens(false)
-          })
+
+        setIsLoading(true)
+
+        try {
+          const response = await axios.post(
+            "http://localhost:4000/api/threshold/metrics",
+            article
+          )
+
+          setIsLoading(false)
+
+          const bpData: number[] = response.data[0].result.map(
+            (item: DataItem) => item.bp
+          )
+          console.log("printing bp data")
+          console.log(bpData)
+          console.log(response.data[0].result)
+          const xLabels: string[] = response.data[0].result.map(
+            (item: DataItem) => item.start_time
+          )
+          setData(bpData)
+          setxLabels(xLabels)
+          setOpens(false)
+        } catch (error) {
+          setIsLoading(false)
+        }
       } else if (!isRealtime) {
         const article = {
           title: selectedDevice?.asset_id,
           startDate: startTime,
           endDate: endTime,
         }
-        axios
-          .post("http://localhost:4000/api/threshold/check", article)
-          .then((response) => {
-            console.log(response.data)
-            const bpData: number[] = response.data.map(
-              (item: DataItem) => item.bp
-            )
 
-            const xLabels: string[] = response.data.map(
-              (item: DataItem) => item.start_time
-            )
+        setIsLoading(true)
 
-            setxLabels(xLabels)
-            setData(bpData)
-            console.log(bpData)
-            setFilt(response.data[0])
-            setOpens(false)
-          })
+        try {
+          const response = await axios.post(
+            "http://localhost:4000/api/threshold/check",
+            article
+          )
+
+          setIsLoading(false)
+
+          const bpData: number[] = response.data.map(
+            (item: DataItem) => item.bp
+          )
+
+          const xLabels: string[] = response.data.map(
+            (item: DataItem) => item.start_time
+          )
+
+          setxLabels(xLabels)
+          setData(bpData)
+          console.log(bpData)
+          setFilt(response.data[0])
+          setOpens(false)
+        } catch (error) {
+          setIsLoading(false)
+        }
       }
     } else if (updatedValue == "30") {
       if (isRealtime) {
         const article = { title: selectedDevice.asset_id }
-        axios
-          .post("http://localhost:4000/api/threshold/metrics", article)
-          .then((response) => {
-            const rfData: number[] = response.data[0].result.map(
-              (item: DataItem) => item.rf
-            )
-            console.log("printing rff data")
-            console.log(rfData)
-            console.log(response.data[0].result)
-            const xLabels: string[] = response.data[0].result.map(
-              (item: DataItem) => item.start_time
-            )
 
-            setData(rfData)
-            setxLabels(xLabels)
+        setIsLoading(true)
 
-            setOpens(false)
-          })
+        try {
+          const response = await axios.post(
+            "http://localhost:4000/api/threshold/metrics",
+            article
+          )
+
+          setIsLoading(false)
+
+          const rfData: number[] = response.data[0].result.map(
+            (item: DataItem) => item.rf
+          )
+          console.log("printing rff data")
+          console.log(rfData)
+          console.log(response.data[0].result)
+          const xLabels: string[] = response.data[0].result.map(
+            (item: DataItem) => item.start_time
+          )
+
+          setData(rfData)
+          setxLabels(xLabels)
+
+          setOpens(false)
+        } catch (error) {
+          setIsLoading(false)
+        }
       } else if (!isRealtime) {
         const article = {
           title: selectedDevice?.asset_id,
@@ -265,24 +316,32 @@ const Metrics: React.FC = () => {
           endDate: endTime,
         }
 
-        axios
-          .post("http://localhost:4000/api/threshold/check", article)
-          .then((response) => {
-            console.log(response.data)
-            const rfData: number[] = response.data.map(
-              (item: DataItem) => item.rf
-            )
+        setIsLoading(true)
 
-            const xLabels: string[] = response.data.map(
-              (item: DataItem) => item.start_time
-            )
+        try {
+          const response = await axios.post(
+            "http://localhost:4000/api/threshold/check",
+            article
+          )
 
-            setxLabels(xLabels)
-            setData(rfData)
-            console.log(rfData)
-            setFilt(response.data[0])
-            setOpens(false)
-          })
+          setIsLoading(false)
+
+          const rfData: number[] = response.data.map(
+            (item: DataItem) => item.rf
+          )
+
+          const xLabels: string[] = response.data.map(
+            (item: DataItem) => item.start_time
+          )
+
+          setxLabels(xLabels)
+          setData(rfData)
+          console.log(rfData)
+          setFilt(response.data[0])
+          setOpens(false)
+        } catch (error) {
+          setIsLoading(false)
+        }
       }
     }
   }
@@ -294,30 +353,38 @@ const Metrics: React.FC = () => {
     console.log(selectedDevice)
     console.log(selectedDevice.asset_id)
     const article = { title: selectedDevice.asset_id }
-    axios
-      .post("http://localhost:4000/api/threshold/metrics", article)
-      .then((response) => {
-        console.log(response.data)
-        const etData: number[] = response.data[0].result.map(
-          (item: DataItem) => item.et
-        )
-        const xLabels: string[] = response.data[0].result.map(
-          (item: DataItem) => item.start_time
-        )
 
-        setData(etData)
-        setxLabels(xLabels)
+    setIsLoading(true)
 
-        console.log(selectedDevice?.asset_id)
-        console.log(selectedDevice?.asset_name)
+    try {
+      axios
+        .post("http://localhost:4000/api/threshold/metrics", article)
+        .then((response) => {
+          setIsLoading(false)
+          console.log(response.data)
+          const etData: number[] = response.data[0].result.map(
+            (item: DataItem) => item.et
+          )
+          const xLabels: string[] = response.data[0].result.map(
+            (item: DataItem) => item.start_time
+          )
 
-        setLatestBp(response.data[0].latestDocumentsBp)
-        setLatestEt(response.data[0].latestDocumentsEt)
-        setLatestKnn(response.data[0].latestDocumentsKnn)
-        setLatestRf(response.data[0].latestDocumentsRf)
-        setOpens(false)
-      })
-  }, [selectedDevice])
+          setData(etData)
+          setxLabels(xLabels)
+
+          console.log(selectedDevice?.asset_id)
+          console.log(selectedDevice?.asset_name)
+
+          setLatestBp(response.data[0].latestDocumentsBp)
+          setLatestEt(response.data[0].latestDocumentsEt)
+          setLatestKnn(response.data[0].latestDocumentsKnn)
+          setLatestRf(response.data[0].latestDocumentsRf)
+          setOpens(false)
+        })
+    } catch (error) {
+      setIsLoading(false)
+    }
+  }, [])
 
   const allYLabels = Object.values(yLabels)
 
@@ -358,51 +425,55 @@ const Metrics: React.FC = () => {
     ],
   }
 
-  console.log({ data, xLabels })
-
-  const fetchData = () => {
+  const fetchData = async () => {
     if (isRealtime) {
       const article = { title: selectedDevice.asset_id }
-      axios
-        .post("http://localhost:4000/api/threshold/metrics", article)
-        .then((response) => {
-          const etData: number[] = response.data[0].result.map(
-            (item: DataItem) => item.et
-          )
-          const rfData: number[] = response.data[0].result.map(
-            (item: DataItem) => item.rf
-          )
-          const knnData: number[] = response.data[0].result.map(
-            (item: DataItem) => item.knn
-          )
-          const bpData: number[] = response.data[0].result.map(
-            (item: DataItem) => item.bp
-          )
-          const xLabels: string[] = response.data[0].result.map(
-            (item: DataItem) => item.start_time
-          )
-          if (age == " 10") {
-            setData(etData)
-            setxLabels(xLabels)
-          } else if (age == "20") {
-            setData(knnData)
-            setxLabels(xLabels)
-          } else if (age == "30") {
-            setData(rfData)
-            setxLabels(xLabels)
-          } else if (age == "40") {
-            setData(bpData)
-            setxLabels(xLabels)
-          }
-          setMyObject(response.data[0].startObject)
-          setLatestBp(response.data[0].latestDocumentsBp)
-          setLatestEt(response.data[0].latestDocumentsEt)
-          setLatestKnn(response.data[0].latestDocumentsKnn)
-          setLatestRf(response.data[0].latestDocumentsRf)
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error)
-        })
+
+      setIsLoading(true)
+
+      try {
+        const response = await axios.post(
+          "http://localhost:4000/api/threshold/metrics",
+          article
+        )
+
+        setIsLoading(false)
+        const etData: number[] = response.data[0].result.map(
+          (item: DataItem) => item.et
+        )
+        const rfData: number[] = response.data[0].result.map(
+          (item: DataItem) => item.rf
+        )
+        const knnData: number[] = response.data[0].result.map(
+          (item: DataItem) => item.knn
+        )
+        const bpData: number[] = response.data[0].result.map(
+          (item: DataItem) => item.bp
+        )
+        const xLabels: string[] = response.data[0].result.map(
+          (item: DataItem) => item.start_time
+        )
+        if (age == " 10") {
+          setData(etData)
+          setxLabels(xLabels)
+        } else if (age == "20") {
+          setData(knnData)
+          setxLabels(xLabels)
+        } else if (age == "30") {
+          setData(rfData)
+          setxLabels(xLabels)
+        } else if (age == "40") {
+          setData(bpData)
+          setxLabels(xLabels)
+        }
+        setMyObject(response.data[0].startObject)
+        setLatestBp(response.data[0].latestDocumentsBp)
+        setLatestEt(response.data[0].latestDocumentsEt)
+        setLatestKnn(response.data[0].latestDocumentsKnn)
+        setLatestRf(response.data[0].latestDocumentsRf)
+      } catch (error) {
+        setIsLoading(false)
+      }
     }
   }
 
@@ -468,6 +539,8 @@ const Metrics: React.FC = () => {
             setxLabels={setxLabels}
             startTime={startTime}
             jsonData={getJsonData()}
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
           />
           <br />
           <InstantaneousHealth />
@@ -1074,22 +1147,20 @@ const Metrics: React.FC = () => {
               />
             </Grid>
           </Grid>
-          <Modal
-            open={opens}
-            aria-labelledby="parent-modal-title"
-            aria-describedby="parent-modal-description"
-          >
-            <Box sx={{ ...style, width: 400 }}>
-              <LinearProgress
-                variant="buffer"
-                value={progress}
-                valueBuffer={buffer}
-              />
-            </Box>
-          </Modal>
         </div>
       </div>
-      <OptionsDrawer />
+
+      <OptionsDrawer
+        isRmsDataLoading={isLoading}
+        refetchRmsData={() => {
+          setIsRealtime(true)
+
+          setTimeout(() => {
+            handleChange(age)
+          }, 200)
+        }}
+        setIsRmsDataRefreshing={setIsLoading}
+      />
     </DashboardLayout>
   )
 }
