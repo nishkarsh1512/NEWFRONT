@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { Dispatch, SetStateAction, useState } from "react"
 import DoubleArrowOutlinedIcon from "@mui/icons-material/DoubleArrowOutlined"
 import classnames from "classnames"
 import { Divider } from "@mui/material"
@@ -11,8 +11,28 @@ import { useAppStateContext } from "../../../context/contextProvider"
 import IconButton from "@mui/material/IconButton"
 import { devices } from "../../../constants/devices"
 import useDeviceStore from "../../../store/device"
+import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined"
+import {
+  QueryObserverResult,
+  RefetchOptions,
+  RefetchQueryFilters,
+} from "@tanstack/react-query"
+import { ResponseError } from "../../../api/client"
+import clsx from "clsx"
 
-const OptionsDrawer = () => {
+interface Props {
+  setIsRmsDataRefreshing: Dispatch<SetStateAction<boolean>>
+  isRmsDataLoading: boolean
+  refetchRmsData: <TPageData>(
+    options?: (RefetchOptions & RefetchQueryFilters<TPageData>) | undefined
+  ) => Promise<QueryObserverResult<any, ResponseError>>
+}
+
+const OptionsDrawer = ({
+  refetchRmsData,
+  setIsRmsDataRefreshing,
+  isRmsDataLoading,
+}: Props) => {
   // @ts-ignore
   const { optionsDrawerActive, setOptionsDrawerActive } = useAppStateContext()
 
@@ -28,10 +48,6 @@ const OptionsDrawer = () => {
     asset_name: string,
     asset_location: string
   ) => {
-    //////////////////
-    ////////////////////CHECKPOINT
-    //////////////////////
-    /////////////////////////
     console.log("handleAssetIdChange")
     const device = devices.filter(
       (item) =>
@@ -50,7 +66,7 @@ const OptionsDrawer = () => {
   return (
     <div
       className={classnames(
-        "flex flex-col gap-5 absolute right-[1.75rem] rounded-lg shadow-SearchInput px-5 pt-3 pb-6 bg-white border transition-all duration-500 z-10",
+        "flex flex-col gap-5 absolute right-[1.75rem] rounded-lg shadow-SearchInput px-5 pt-3 pb-6 bg-white border transition-all duration-500 z-30",
         { "-bottom-[525px] w-[202px]": !optionsDrawerActive },
         { "bottom-3 w-80": optionsDrawerActive }
       )}
@@ -59,22 +75,43 @@ const OptionsDrawer = () => {
         <span className="font-semibold text-lg text-[#303a4e] tracking-wider">
           Options
         </span>
-        <IconButton
-          aria-label="delete"
-          className="hover:scale-110 transition-all duration-300"
-          onClick={() => {
-            setOptionsDrawerActive(!optionsDrawerActive)
-          }}
-        >
-          <DoubleArrowOutlinedIcon
-            className={`text-lightBlue text-2xl transition-all duration-600`}
-            style={{
-              transform: optionsDrawerActive
-                ? "rotate(90deg)"
-                : "rotateX(180deg) rotate(90deg)",
+
+        <div className="flex items-center">
+          <IconButton
+            aria-label="delete"
+            className={clsx(
+              isRmsDataLoading && "animate-spin",
+              "hover:scale-110 transition-all duration-300"
+            )}
+            onClick={() => {
+              if (!isRmsDataLoading) {
+                refetchRmsData()
+                setIsRmsDataRefreshing(true)
+              }
             }}
-          />
-        </IconButton>
+          >
+            <RefreshOutlinedIcon
+              className={`text-lightBlue text-2xl transition-all duration-600`}
+            />
+          </IconButton>
+
+          <IconButton
+            aria-label="delete"
+            className="hover:scale-110 transition-all duration-300"
+            onClick={() => {
+              setOptionsDrawerActive(!optionsDrawerActive)
+            }}
+          >
+            <DoubleArrowOutlinedIcon
+              className={`text-lightBlue text-2xl transition-all duration-600`}
+              style={{
+                transform: optionsDrawerActive
+                  ? "rotate(90deg)"
+                  : "rotateX(180deg) rotate(90deg)",
+              }}
+            />
+          </IconButton>
+        </div>
       </div>
       <Divider className="" />
       <div className="py-2 px-2 border shadow rounded flex items-center gap-2">

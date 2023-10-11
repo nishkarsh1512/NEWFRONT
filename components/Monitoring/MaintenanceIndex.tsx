@@ -18,6 +18,7 @@ import exportToImage from "../../utility/exportToImage"
 import exportToPdf from "../../utility/exportToPdf"
 import exportToXLSX from "../../utility/exportToXlsx"
 import html2canvas from "html2canvas"
+import { Skeleton } from "@mui/material"
 
 if (typeof Highcharts === "object") {
   HighChartsExporting(Highcharts)
@@ -31,10 +32,15 @@ if (typeof Highcharts === "object") {
   HighChartsMore(Highcharts)
 }
 
-const InstantaneousParameters: React.FC<{ data: any[] }> = (props) => {
+const InstantaneousParameters: React.FC<{
+  data: any[]
+  isRmsDataLoading: boolean
+}> = (props) => {
   const chartRef = useRef<HighchartsReactRefObject>(null)
 
   let h1 = { ...props.data[0].name[0] }
+
+  const recentTimeArray: string[] = [...h1["timeup"]]
 
   const [operational, setOperational] = useState<string>("0")
   const [caution, setCaution] = useState<string>("0")
@@ -151,9 +157,22 @@ const InstantaneousParameters: React.FC<{ data: any[] }> = (props) => {
 
   return (
     <div
-      className="bg-white rounded-lg pt-3 pb-3 px-4 overflow-hidden grid grid-cols-2 h-[65%]"
+      className="bg-white rounded-lg pt-3 pb-3 px-4 overflow-hidden grid grid-cols-2 h-[65%] relative"
       id="maintenance-index"
     >
+      {props.isRmsDataLoading && (
+        <div className="absolute h-full w-full top-0 right-0 z-20 flex items-center justify-center">
+          <Skeleton
+            variant="rounded"
+            animation="wave"
+            height={"100%"}
+            width={"100%"}
+            color="white"
+            className="bg-black/10 backdrop-blur-[0.5px]"
+          />
+        </div>
+      )}
+
       <div className="col-span-2 block">
         <div className="default relative">
           <ExportMenu
@@ -195,6 +214,11 @@ const InstantaneousParameters: React.FC<{ data: any[] }> = (props) => {
             highcharts={Highcharts}
             options={maintenanceOptions()}
           />
+          <p className="text-xs text-gray-500 mt-2 pl-4">
+            {!!props.data &&
+              !!recentTimeArray &&
+              `Data received at: ${recentTimeArray[299]}`}
+          </p>
         </div>
       </div>
       <div className="col-span-2">

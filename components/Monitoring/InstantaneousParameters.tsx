@@ -45,7 +45,10 @@ if (typeof Highcharts === "object") {
   HighChartsAccessibility(Highcharts)
 }
 
-const InstantaneousParameters: React.FC<{ data: any[] }> = (props) => {
+const InstantaneousParameters: React.FC<{
+  data: any[]
+  isRmsDataLoading: boolean
+}> = (props) => {
   let h1 = { ...props.data[0].name[0] }
   const [axis, setAxis] = useState("X Axis")
   const [feature, setFeature] = useState("Acceleration FFT")
@@ -110,7 +113,6 @@ const InstantaneousParameters: React.FC<{ data: any[] }> = (props) => {
   const [myArray7, setMyArray7] = useState<number[]>([0.2, 0.5])
 
   useEffect(() => {
-    console.log("rerunning the use Effect")
     if (props.data[0].name[0]) {
       setIsRealtime(true)
       const stringArray: string[] = [...h1["x_rms_acl"]]
@@ -140,8 +142,20 @@ const InstantaneousParameters: React.FC<{ data: any[] }> = (props) => {
 
   return (
     <div className="bg-white rounded-lg p-3 pt-0 overflow-hidden col-span-3 capitalize relative">
+      {props.isRmsDataLoading && (
+        <div className="absolute h-full w-full top-0 right-0 z-20 flex items-center justify-center">
+          <Skeleton
+            variant="rounded"
+            animation="wave"
+            height={"100%"}
+            width={"100%"}
+            color="white"
+            className="bg-black/10 backdrop-blur-[0.5px]"
+          />
+        </div>
+      )}
       <p className="text-xs text-gray-500 mt-2">
-        {recentTime && `Data received at: ${recentTime[299]}`}
+        {!!props.data && !!recentTime && `Data received at: ${recentTime[299]}`}
       </p>
       {isFetching && (
         <>
