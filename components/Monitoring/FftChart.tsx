@@ -21,6 +21,7 @@ import {
   Tooltip,
   Box,
   Switch,
+  Skeleton,
 } from "@mui/material"
 import moment from "moment"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
@@ -65,7 +66,9 @@ const style = {
   pb: 3,
 }
 
-const FftChart: React.FC<{ data: any[] }> = (props) => {
+const FftChart: React.FC<{ data: any[]; isRmsDataLoading: boolean }> = (
+  props
+) => {
   let h1 = { ...props.data[0].name[0] }
   const [useFirstOptions, setUseFirstOptions] = useState(true)
   const [X_acc, setX_acc] = useState<number[]>([])
@@ -98,8 +101,6 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
   const [visit, setVisit] = React.useState(false)
 
   const chartRef = useRef<HighchartsReactRefObject>(null)
-
-  console.log({ data: props.data })
 
   // Get Chart json data
   const getChartJsonData = () => {
@@ -171,8 +172,6 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
     setVisit(false)
     setAxis(["X-Axis"])
   }
-
-  console.log({ visit })
 
   const toggleBoolean = () => {
     setMyBoolean(true)
@@ -352,7 +351,20 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
   })
   /////////////////////////////////////////////
   return (
-    <div className="bg-white rounded-lg p-3 pt-3 overflow-hidden max-h-[700px]">
+    <div className="bg-white rounded-lg p-3 pt-3 overflow-hidden max-h-[700px] relative">
+      {props.isRmsDataLoading && (
+        <div className="absolute h-full w-full top-0 right-0 z-20 flex items-center justify-center">
+          <Skeleton
+            variant="rounded"
+            animation="wave"
+            height={"100%"}
+            width={"100%"}
+            color="white"
+            className="bg-black/10 backdrop-blur-[0.5px]"
+          />
+        </div>
+      )}
+
       {/* Feature & Interval Dropdowns  */}
       <div className="flex flex-col gap-3 mt-16">
         <div className="flex items-center gap-5 pl-2 z-10">
@@ -364,11 +376,11 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
                 value={startTime}
                 inputFormat="DD/MM/YYYY hh:mm A"
                 onChange={(value) => {
-                  console.log(
-                    "Start time -> ",
-                    //@ts-ignore
-                    new Date(value.$d).toISOString()
-                  )
+                  // console.log(
+                  //   "Start time -> ",
+                  //   //@ts-ignore
+                  //   new Date(value.$d).toISOString()
+                  // )
                   // @ts-ignore
                   setStartTime(value?.$d)
                 }}
@@ -401,7 +413,7 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
                 inputFormat="DD/MM/YYYY hh:mm A"
                 onChange={(value) => {
                   // @ts-ignore
-                  console.log("End time -> ", new Date(value.$d).toISOString())
+                  // console.log("End time -> ", new Date(value.$d).toISOString())
                   // @ts-ignore
                   setEndTime(value?.$d)
                 }}
@@ -461,7 +473,6 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
                         .then((response) => {
                           toggleBoolean()
                           setIsRealtime(false)
-                          console.log(response.data)
                           setFillArray(response.data[0].results)
                           setUpdatedArray(response.data[0].start_times)
                           setIsRealtime(false)
@@ -586,7 +597,6 @@ const FftChart: React.FC<{ data: any[] }> = (props) => {
                     onClick={() => {
                       if (item === "Velocity") {
                         if (filter) {
-                          console.log(feature)
                           setIsEnabled(true)
                           setTemp(fill_X_vel)
                           setTemp1(fill_Y_vel)

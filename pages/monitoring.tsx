@@ -6,7 +6,7 @@ import FftChart from "../components/Monitoring/FftChart"
 import InstantaneousParameters from "../components/Monitoring/InstantaneousParameters"
 import MaintenanceIndex from "../components/Monitoring/MaintenanceIndex"
 import DashboardLayout from "../layout/dashboard"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { AppProvider } from "../components/Monitoring/AppContext"
 import useRmsData from "../api/hooks/charts/useRmsData"
 import TimeWaveformChart from "../components/Monitoring/TimeWaveformChart"
@@ -15,16 +15,17 @@ const Monitoring = () => {
   const {
     data: rmsData,
     isLoading: isRmsDataLoading,
-    isError: isRmsDataError,
+    isFetching: isRmsDataFetching,
+    refetch: refetchRmsData,
   } = useRmsData()
 
-  const [sample, setSample] = useState<{ name: any[] }>({
-    name: [],
-  })
+  const [isRmsDataRefreshing, setIsRmsDataRefreshing] = useState(false)
 
-  const generateCard = (part: any[]) => {
-    setSample({ name: part })
-  }
+  useEffect(() => {
+    if (!isRmsDataFetching) {
+      setIsRmsDataRefreshing(false)
+    }
+  }, [isRmsDataFetching])
 
   const [myBoolean, setMyBoolean] = useState(false)
 
@@ -43,24 +44,44 @@ const Monitoring = () => {
           <div className="flex-col flex col-span-3 gap-4 ">
             <TimeWaveformChart
               data={!!rmsData ? [{ name: rmsData }] : [{ name: [] }]}
+              isRmsDataLoading={
+                (isRmsDataLoading && isRmsDataFetching) || isRmsDataRefreshing
+              }
             />
-            <FftChart data={!!rmsData ? [{ name: rmsData }] : [{ name: [] }]} />
+            <FftChart
+              data={!!rmsData ? [{ name: rmsData }] : [{ name: [] }]}
+              isRmsDataLoading={
+                (isRmsDataLoading && isRmsDataFetching) || isRmsDataRefreshing
+              }
+            />
           </div>
           <div className="flex flex-col gap-4 justify-between max-h-[1230px]">
             <MaintenanceIndex
               data={!!rmsData ? [{ name: rmsData }] : [{ name: [] }]}
+              isRmsDataLoading={
+                (isRmsDataLoading && isRmsDataFetching) || isRmsDataRefreshing
+              }
             />
             <NoSsr>
-              <DevicePanel createCard={generateCard} />
+              <DevicePanel />
             </NoSsr>
           </div>
           <div className="col-span-4">
             <InstantaneousParameters
               data={!!rmsData ? [{ name: rmsData }] : [{ name: [] }]}
+              isRmsDataLoading={
+                (isRmsDataLoading && isRmsDataFetching) || isRmsDataRefreshing
+              }
             />
           </div>
         </div>
-        <OptionsDrawer />
+        <OptionsDrawer
+          refetchRmsData={refetchRmsData}
+          setIsRmsDataRefreshing={setIsRmsDataRefreshing}
+          isRmsDataLoading={
+            (isRmsDataLoading && isRmsDataFetching) || isRmsDataRefreshing
+          }
+        />
       </AppProvider>
     </DashboardLayout>
   )

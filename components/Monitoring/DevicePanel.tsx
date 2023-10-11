@@ -4,161 +4,14 @@ import useDeviceStore from "../../store/device"
 import { CopyToClipboard } from "react-copy-to-clipboard"
 import { Button, Tooltip } from "@mui/material"
 import { showNotification } from "@mantine/notifications"
-import { useEffect, useState } from "react"
-import axios from "axios"
 import * as React from "react"
-import Box from "@mui/material/Box"
-import Modal from "@mui/material/Modal"
-import Typography from "@mui/material/Typography"
-import CircularProgress, {
-  CircularProgressProps,
-} from "@mui/material/CircularProgress"
-import LinearProgress from "@mui/material/LinearProgress"
-import SendIcon from "@mui/icons-material/Send"
-import Stack from "@mui/material/Stack"
 let interval: NodeJS.Timeout | undefined
-import { useContext } from "react"
-import { AppContext } from "./AppContext"
-import Snackbar from "@mui/material/Snackbar"
-import MuiAlert, { AlertProps } from "@mui/material/Alert"
-///////////////////////////////////
-const style = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  color: "background.paper",
-  boxShadow: 24,
-  pt: 2,
-  px: 4,
-  pb: 3,
-}
 
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  props,
-  ref
-) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
-})
-///////////////////////////////////////
-interface dataFormProps {
-  createCard: (part: any[]) => void
-}
-const val = false
-
-const DevicePanel = ({ createCard = (part: any[]) => {} }: dataFormProps) => {
+const DevicePanel = () => {
   const { selectedDevice } = useDeviceStore()
-  const [part, setPart] = useState([])
-  const { myBoolean, setMyBoolean } = useContext(AppContext)
-
-  ////////////////////////////// EXTRAS STARTED
-  const [open, setOpen] = React.useState(false)
-  const [opens, setOpens] = React.useState(false)
-  const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
-  const [loading, setLoading] = React.useState(true)
-  ////////////////////////////////
-  const [progress, setProgress] = React.useState(0)
-  const [buffer, setBuffer] = React.useState(10)
-  const [string, setString] = React.useState(
-    "6d7f45c0-3039-11ed-81ef-d732cfd46ac3"
-  )
-  const progressRef = React.useRef(() => {})
-  React.useEffect(() => {
-    progressRef.current = () => {
-      if (progress > 100) {
-        setProgress(0)
-        setBuffer(10)
-      } else {
-        const diff = Math.random() * 10
-        const diff2 = Math.random() * 10
-        setProgress(progress + diff)
-        setBuffer(progress + diff + diff2)
-      }
-    }
-  })
-
-  React.useEffect(() => {
-    /////////////////////
-    ////////////////////////check
-    useDeviceStore.getState().reset()
-    const timer = setInterval(() => {
-      progressRef.current()
-    }, 500)
-
-    return () => {
-      clearInterval(timer)
-    }
-  }, [])
-  //////////////////////////////EXTRAS ENDED
-  const changeHandler = () => {
-    createCard(part)
-    setOpen(false)
-  }
-
-  const changesHandler = (check: any[]) => {
-    createCard(check)
-  }
-
-  //////////////////////////////////
-
-  ////////////////
-  useEffect(() => {
-    setString(selectedDevice.asset_id)
-  })
-
-  useEffect(() => {
-    setOpen(true)
-    setLoading(true)
-    setString(selectedDevice.asset_id)
-
-    console.log(selectedDevice.asset_id)
-
-    console.log("device changed ")
-
-    const article = { title: selectedDevice?.asset_id }
-
-    axios
-      .get(`http://localhost:4000/api/threshold/rms?asset_id=${article.title}`)
-      .then((response) => {
-        setPart(response.data)
-        setLoading(false)
-      })
-  }, [selectedDevice])
-
-  useEffect(() => {
-    // Define a function that contains the code you want to run every 30 seconds
-    const fetchData = () => {
-      if (myBoolean) {
-        console.log(myBoolean)
-        return () => {
-          clearInterval(interval)
-        }
-      }
-      const article = { title: selectedDevice?.asset_id }
-
-      axios
-        .get(
-          `http://localhost:4000/api/threshold/rms?asset_id=${article.title}`
-        )
-        .then((response) => {
-          changesHandler(response.data)
-        })
-    }
-
-    // Run the fetchData function immediately, and then every 30 seconds
-    fetchData()
-    const intervalId = setInterval(fetchData, 30000) // 30 seconds in milliseconds
-
-    // Clean up the interval when the component unmounts
-    return () => clearInterval(intervalId)
-  }, [selectedDevice, myBoolean])
 
   return (
     <div className="bg-white rounded-lg py-3 px-4 overflow-hidden h-[35%]">
-      {/* HEADER  */}
       <div className="flex justify-between items-center mb-2 pl-3">
         <p className="font-semibold text-lg">Device Details</p>
         <span className="py-1.5 px-2 transition-all cursor-pointer hover:bg-gray-200 rounded-full">
@@ -251,38 +104,6 @@ const DevicePanel = ({ createCard = (part: any[]) => {} }: dataFormProps) => {
           <p className="text-gray-400">{selectedDevice?.asset_location}</p>
         </div>
       </div>
-      <div></div>
-      <Modal
-        open={open}
-        aria-labelledby="parent-modal-title"
-        aria-describedby="parent-modal-description"
-      >
-        <Box sx={{ ...style, width: 400 }}>
-          {loading && (
-            <LinearProgress
-              variant="buffer"
-              value={progress}
-              valueBuffer={buffer}
-            />
-          )}
-          <Stack direction="row" spacing={2}>
-            {!loading && (
-              <Button
-                variant="contained"
-                endIcon={<SendIcon />}
-                onClick={changeHandler}
-              >
-                Show Data
-              </Button>
-            )}
-          </Stack>
-        </Box>
-      </Modal>
-      <Snackbar open={opens} autoHideDuration={6000}>
-        <Alert severity="success" sx={{ width: "100%" }}>
-          Data updated
-        </Alert>
-      </Snackbar>
     </div>
   )
 }

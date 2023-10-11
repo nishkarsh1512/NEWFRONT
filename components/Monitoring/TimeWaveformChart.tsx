@@ -24,21 +24,16 @@ import {
   Switch,
 } from "@mui/material"
 
-import Modal from "@mui/material/Modal"
-import LinearProgress from "@mui/material/LinearProgress"
 import { Checkbox } from "@mui/material"
 import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined"
 import { QueryClient, useQuery } from "@tanstack/react-query"
 import axiosConfig from "../../config/axiosConfig"
-import useDataStore from "../../store/data"
 import useDeviceStore from "../../store/device"
 import useTimeStore from "../../store/time"
 import moment from "moment"
 import { showNotification } from "@mantine/notifications"
 import { useEffect, useRef } from "react"
 import axios from "axios"
-import Snackbar from "@mui/material/Snackbar"
-import MuiAlert, { AlertProps } from "@mui/material/Alert"
 import { useContext } from "react"
 import { AppContext } from "./AppContext"
 import exportToXLSX from "../../utility/exportToXlsx"
@@ -47,13 +42,6 @@ import ExportMenu from "../Core/ExportMenu"
 import exportToImage from "../../utility/exportToImage"
 
 let interval: NodeJS.Timeout | undefined
-
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  props,
-  ref
-) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
-})
 
 if (typeof Highcharts === "object") {
   HighChartsExporting(Highcharts)
@@ -65,29 +53,15 @@ if (typeof Highcharts === "object") {
   HighChartsAccessibility(Highcharts)
 }
 
-const style = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  color: "background.paper",
-  boxShadow: 24,
-  pt: 2,
-  px: 4,
-  pb: 3,
-}
-
 interface Props {
   data: any[]
+  isRmsDataLoading: boolean
 }
 
 const TimeWaveformChart = (props: Props) => {
   const chartRef = useRef<HighchartsReactRefObject>(null)
 
   const [progress, setProgress] = React.useState(0)
-  const [buffer, setBuffer] = React.useState(10)
 
   const progressRef = React.useRef(() => {})
 
@@ -134,13 +108,10 @@ const TimeWaveformChart = (props: Props) => {
     progressRef.current = () => {
       if (progress > 100) {
         setProgress(0)
-        setBuffer(10)
       } else {
         const diff = Math.random() * 10
-        const diff2 = Math.random() * 10
 
         setProgress(progress + diff)
-        setBuffer(progress + diff + diff2)
       }
     }
   })
@@ -156,8 +127,6 @@ const TimeWaveformChart = (props: Props) => {
     setMyBoolean(true)
   }
 
-  const [open, setOpen] = React.useState(false)
-  const [opens, setOpens] = React.useState(false)
   const [myArray, setMyArray] = useState<number[]>([12, 23, 65])
   const [myArray2, setMyArray2] = useState<number[]>([12, 23, 65])
   const [myArray3, setMyArray3] = useState<number[]>([12, 23, 65])
@@ -170,16 +139,13 @@ const TimeWaveformChart = (props: Props) => {
   const [myString, setMyString] = useState<string[]>([" ", " ", " "])
   const [fillArray, setFillArray] = useState<any[]>([])
 
-  // console.log(myState)
-  // console.log(props.data[0].name[0])
   let h1 = { ...props.data[0].name[0] }
   const [isEnabled, setIsEnabled] = useState<boolean>(false)
   const [filter, setFilter] = useState<boolean>(false)
 
-  //////////////////////////////////////////
   const [myState, setMyState] = useState<string>(h1.asset_id)
   const prevMyStateRef = useRef<string>("")
-  ///////////////////////////////////////////
+
   if (myState !== prevMyStateRef.current) {
     prevMyStateRef.current = myState
   }
@@ -199,13 +165,11 @@ const TimeWaveformChart = (props: Props) => {
         const stringArray5: string[] = [...h1["x_rms_vel"]]
         const stringArray6: string[] = [...h1["y_rms_vel"]]
         const stringArray7: string[] = [...h1["z_rms_vel"]]
-        //////////////////////////THREHOLD COLUMN
+
         const obj: any = { ...h1["threshold"] }
         const objs: any = { ...obj[selectedDevice?.asset_id] }
         const obj1: any = { ...objs["X_Axis_Velocity_Time_Waveform"] }
-        const obj2: any = { ...objs["Y_Axis_Velocity_Time_Waveform"] }
-        const obj3: any = { ...objs["Z_Axis_Velocity_Time_Waveform"] }
-        ////////////////////////////////////////////////
+
         const floatArray: number[] = stringArray.map((str) => parseFloat(str))
         const floatArray2: number[] = stringArray2.map((str) => parseFloat(str))
         const floatArray3: number[] = stringArray3.map((str) => parseFloat(str))
@@ -425,6 +389,20 @@ const TimeWaveformChart = (props: Props) => {
 
   return (
     <div className="bg-white rounded-lg p-3 pt-0 overflow-hidden max-h-[700px] h-[700px] relative">
+      {/* Loading */}
+      {props.isRmsDataLoading && (
+        <div className="absolute h-full w-full top-0 right-0 z-20 flex items-center justify-center">
+          <Skeleton
+            variant="rounded"
+            animation="wave"
+            height={"100%"}
+            width={"100%"}
+            color="white"
+            className="bg-black/10 backdrop-blur-[0.5px]"
+          />
+        </div>
+      )}
+
       {isFetching && (
         <>
           <Skeleton
@@ -512,7 +490,6 @@ const TimeWaveformChart = (props: Props) => {
                     //@ts-ignore
                     setEndTime(moment(value?.$d).format())
                     //@ts-ignore
-                    console.log("End Time time => ", moment(value?.$d).format())
                   } else {
                     showNotification({
                       title: "User notification",
@@ -564,10 +541,8 @@ const TimeWaveformChart = (props: Props) => {
                 setFilter(true)
                 if (moment(startTime).isBefore(endTime)) {
                   if (moment(endTime).diff(startTime, "days") <= 7) {
-                    ///////code goes here
                     toggleBoolean()
                     setIsRealtime(false)
-                    setOpens(true)
                     setTimeout(() => {
                       toggleBoolean()
                       const article = {
@@ -625,8 +600,6 @@ const TimeWaveformChart = (props: Props) => {
                           setMyArray7(copyFloatArray7)
 
                           setIsRealtime(false)
-                          setOpen(true)
-                          setOpens(false)
                           toggleBoolean()
                         })
                         .catch((error) => {
@@ -636,7 +609,6 @@ const TimeWaveformChart = (props: Props) => {
                           )
                         })
                     }, 50000) // 30 seconds delay
-                    ////code goes here
                   } else {
                     showNotification({
                       title: "User notification",
@@ -979,6 +951,7 @@ const TimeWaveformChart = (props: Props) => {
       </div>
       {/* SPLINE CHART  */}
       <div className="relative bottom-40">
+        {/* Menu */}
         <ExportMenu
           menuItems={[
             {
@@ -1034,39 +1007,8 @@ const TimeWaveformChart = (props: Props) => {
           )}
         />
       </div>
-      <Snackbar open={open} autoHideDuration={6000}>
-        <Alert severity="success" sx={{ width: "100%" }}>
-          Data updated
-        </Alert>
-      </Snackbar>
-
-      <Modal
-        open={opens}
-        aria-labelledby="parent-modal-title"
-        aria-describedby="parent-modal-description"
-      >
-        <Box sx={{ ...style, width: 400 }}>
-          <LinearProgress
-            variant="buffer"
-            value={progress}
-            valueBuffer={buffer}
-          />
-        </Box>
-      </Modal>
     </div>
   )
 }
 
 export default TimeWaveformChart
-
-// {
-//   x_axis: axis.includes("X-Axis"),
-//   y_axis: axis.includes("Y-Axis"),
-//   z_axis: axis.includes("Z-Axis"),
-//   y_label: `Amplitude ${
-//     feature === "Acceleration Time Waveform" ? "( m/s² )" : "m/s"
-//   }`,
-//   feature,
-//   timeWaveFormData: timeWaveForm,
-//   title: `Time Waveform Data (${selectedDevice.exhauster_name.toLowerCase()}, ${selectedDevice.asset_name.toLowerCase()}, ${selectedDevice.asset_location.split(" ")[0][0]}${selectedDevice.asset_location.split(" ")[1][0]}${selectedDevice.asset_location.split(" ").length === 3 ? selectedDevice.asset_location.split(" ")[2][0]: ""})`
-// }
