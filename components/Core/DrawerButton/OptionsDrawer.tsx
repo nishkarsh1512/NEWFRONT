@@ -23,9 +23,11 @@ import clsx from "clsx"
 interface Props {
   setIsRmsDataRefreshing: Dispatch<SetStateAction<boolean>>
   isRmsDataLoading: boolean
-  refetchRmsData: <TPageData>(
-    options?: (RefetchOptions & RefetchQueryFilters<TPageData>) | undefined
-  ) => Promise<QueryObserverResult<any, ResponseError>>
+  refetchRmsData:
+    | (<TPageData>(
+        options?: (RefetchOptions & RefetchQueryFilters<TPageData>) | undefined
+      ) => Promise<QueryObserverResult<any, ResponseError>>)
+    | (() => void)
 }
 
 const OptionsDrawer = ({

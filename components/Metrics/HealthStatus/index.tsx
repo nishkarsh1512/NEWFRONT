@@ -4,10 +4,12 @@ import {
   Button,
   FormControl,
   FormControlLabel,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
+  Skeleton,
   Switch,
   Tooltip,
 } from "@mui/material"
@@ -26,6 +28,9 @@ import ExportMenu from "../../Core/ExportMenu"
 import exportToImage from "../../../utility/exportToImage"
 import exportToPdf from "../../../utility/exportToPdf"
 import exportToXLSX from "../../../utility/exportToXlsx"
+import clsx from "clsx"
+import moment from "moment"
+import useTimeStore from "../../../store/time"
 
 interface MyObject {
   [key: string]: number
@@ -54,8 +59,10 @@ interface Props {
     all: any[]
     data: any[]
   }
+  isLoading: boolean
   change: (event: SelectChangeEvent) => void
   options: Highcharts.Options
+  setIsLoading: Dispatch<SetStateAction<boolean>>
 }
 
 const Index = ({
@@ -72,42 +79,29 @@ const Index = ({
   change,
   options,
   jsonData,
+  isLoading,
+  setIsLoading,
 }: Props) => {
   const chartRef = useRef<HighchartsReactRefObject>(null)
 
-  // Get Chart json data
-  const getChartJsonData = () => {
-    // const data = props.data[0].name.length > 0 ? props.data[0].name[0] : null
-    // if (!!data) {
-    //   const jsonData = data?.timeup.map((time: string, index: number) => {
-    //     const x_rms_acl =
-    //       data?.x_rms_acl.length > index ? data?.x_rms_acl[index] : "null"
-    //     const y_rms_acl =
-    //       data?.y_rms_acl.length > index ? data?.y_rms_acl[index] : "null"
-    //     const z_rms_acl =
-    //       data?.z_rms_acl.length > index ? data?.z_rms_acl[index] : "null"
-    //     const x_rms_vel =
-    //       data?.x_rms_vel.length > index ? data?.x_rms_vel[index] : "null"
-    //     const y_rms_vel =
-    //       data?.y_rms_vel.length > index ? data?.y_rms_vel[index] : "null"
-    //     const z_rms_vel =
-    //       data?.z_rms_vel.length > index ? data?.z_rms_vel[index] : "null"
-    //     return {
-    //       x_rms_acl,
-    //       y_rms_acl,
-    //       z_rms_acl,
-    //       x_rms_vel,
-    //       y_rms_vel,
-    //       z_rms_vel,
-    //       timestamp: time,
-    //     }
-    //   })
-    //   return jsonData
-    // }
-  }
+  const { set_tw_StartTime: setStartTime, set_tw_EndTime: setEndTime } =
+    useTimeStore()
 
   return (
-    <div className="bg-white rounded-lg p-3 pt-0 overflow-hiddenrelative">
+    <div className="bg-white rounded-lg p-3 pt-0 overflow-hidden relative">
+      {isLoading && (
+        <div className="absolute h-full w-full top-0 right-0 z-20 flex items-center justify-center">
+          <Skeleton
+            variant="rounded"
+            animation="wave"
+            height={"100%"}
+            width={"100%"}
+            color="white"
+            className="bg-black/10 backdrop-blur-[0.5px]"
+          />
+        </div>
+      )}
+
       <div className="flex flex-col gap-3 pl-2 pt-4">
         <div className="font-bold text-lg">Health State Prediction</div>
         <div className="flex items-center gap-5 z-10">
@@ -218,46 +212,55 @@ const Index = ({
               arrow: "text-gray-200",
             }}
           >
-            <Button
-              onClick={() => {
+            <IconButton
+              onClick={async () => {
+                setIsLoading(true)
+
                 console.log("clicked button")
                 setIsRealtime(false)
                 setAge("10")
+
                 const article = {
                   title: selectedDevice?.asset_id,
                   startDate: startTime,
                   endDate: endTime,
                 }
-                axios
-                  .post(
-                    "http://103.154.184.52:4000/api/threshold/check",
+
+                try {
+                  const response = await axios.post(
+                    "http://localhost:4000/api/threshold/check",
                     article
                   )
-                  .then((response) => {
-                    console.log("point of attraction")
-                    console.log("point of attraction")
 
-                    console.log(response.data)
-                    const etData: number[] = response.data.map(
-                      (item: DataItem) => item.et
-                    )
+                  console.log({ article })
 
-                    const xLabels: string[] = response.data.map(
-                      (item: DataItem) => item.start_time
-                    )
+                  console.log({ response })
+                  setIsLoading(false)
 
-                    setxLabels(xLabels)
-                    setData(etData)
-                    console.log(etData)
-                    setFilt(response.data[0])
-                    console.log("point of attraction")
+                  const etData: number[] = response.data.map(
+                    (item: DataItem) => item.et
+                  )
 
-                    console.log("point of attraction")
-                  })
+                  console.log({ etData})
+
+                  const xLabels: string[] = response.data.map(
+                    (item: DataItem) => item.start_time
+                  )
+
+                  setxLabels(xLabels)
+                  setData(etData)
+                  setFilt(response.data[0])
+                } catch (error) {
+                  setIsLoading(false)
+                }
               }}
+              className={clsx(
+                isLoading && "animate-spin",
+                "hover:scale-110 transition-all duration-300"
+              )}
             >
               <RefreshOutlinedIcon />
-            </Button>
+            </IconButton>
           </Tooltip>
           <FormControlLabel
             className="relative right-1"
