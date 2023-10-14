@@ -365,6 +365,9 @@ const Metrics: React.FC = () => {
       align: "left",
       margin: 160,
     },
+    exporting: {
+      enabled: false,
+    },
     credits: {
       enabled: false,
     },
@@ -489,7 +492,7 @@ const Metrics: React.FC = () => {
     }
   }
 
-  console.log({jsonData: getJsonData()})
+  console.log({ jsonData: getJsonData() })
 
   return (
     <DashboardLayout>
