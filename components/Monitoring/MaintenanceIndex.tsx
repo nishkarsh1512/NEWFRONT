@@ -37,7 +37,6 @@ const InstantaneousParameters: React.FC<{
 
   isRmsDataLoading: boolean
 }> = (props) => {
-  console.log({ props })
   const chartRef = useRef<HighchartsReactRefObject>(null)
 
   let h1 = !!props.data[0].name ? { ...props.data[0].name[0] } : undefined
@@ -136,22 +135,22 @@ const InstantaneousParameters: React.FC<{
         data: [
           {
             name: "Operational",
-            y: parseFloat(parseFloat(operational ?? "0").toFixed(8)),
+            y: Math.floor(parseFloat(operational ?? "0")),
             color: "#31E802",
           },
           {
             name: "Caution",
-            y: parseFloat(parseFloat(caution ?? "0").toFixed(8)),
+            y: Math.floor(parseFloat(caution ?? "0")),
             color: "#ffc107",
           },
           {
             name: "Warning",
-            y: parseFloat(parseFloat(warning ?? "0").toFixed(8)),
+            y: Math.floor(parseFloat(warning ?? "0")),
             color: "#FF0022",
           },
           {
             name: "Disconnected",
-            y: 100 - parseFloat(operational ?? "0"),
+            y: Math.floor(100 - parseFloat(operational ?? "0")),
             color: "#9e9e9e",
           },
         ],
@@ -230,28 +229,28 @@ const InstantaneousParameters: React.FC<{
         <div className="px-3 pt-3">
           <Property
             name="Operational"
-            percentage={operational}
+            percentage={String(Math.floor(parseFloat(operational)))}
             colorDark="#31E802"
             colorLightClass="bg-infoCardLightGreen"
             paddingBottom={true}
           />
           <Property
             name="Caution"
-            percentage={caution}
+            percentage={String(Math.floor(parseFloat(caution)))}
             colorDark="#ffc107"
             colorLightClass="bg-yellow-100"
             paddingBottom={true}
           />
           <Property
             name="Warning"
-            percentage={warning}
+            percentage={String(Math.floor(parseFloat(warning)))}
             colorDark="#FF0022"
             colorLightClass="bg-infoCardLightRed"
             paddingBottom={true}
           />
           <Property
             name="Disconnected"
-            percentage={disconnected}
+            percentage={String(Math.floor(parseFloat(disconnected)))}
             colorDark="#9e9e9e"
             colorLightClass="bg-gray-200"
             paddingBottom={false}

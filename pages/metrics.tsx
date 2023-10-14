@@ -86,7 +86,7 @@ const Metrics: React.FC = () => {
 
         try {
           const response = await axios.post(
-            "http://localhost:4000/api/threshold/metrics",
+            "http://103.154.184.52:4000/api/threshold/metrics",
             article
           )
 
@@ -147,7 +147,7 @@ const Metrics: React.FC = () => {
 
         try {
           const response = await axios.post(
-            "http://localhost:4000/api/threshold/metrics",
+            "http://103.154.184.52:4000/api/threshold/metrics",
             article
           )
 
@@ -178,7 +178,7 @@ const Metrics: React.FC = () => {
 
         try {
           const response = await axios.post(
-            "http://localhost:4000/api/threshold/check",
+            "http://103.154.184.52:4000/api/threshold/check",
             article
           )
 
@@ -208,7 +208,7 @@ const Metrics: React.FC = () => {
 
         try {
           const response = await axios.post(
-            "http://localhost:4000/api/threshold/metrics",
+            "http://103.154.184.52:4000/api/threshold/metrics",
             article
           )
 
@@ -237,7 +237,7 @@ const Metrics: React.FC = () => {
 
         try {
           const response = await axios.post(
-            "http://localhost:4000/api/threshold/check",
+            "http://103.154.184.52:4000/api/threshold/check",
             article
           )
 
@@ -267,7 +267,7 @@ const Metrics: React.FC = () => {
 
         try {
           const response = await axios.post(
-            "http://localhost:4000/api/threshold/metrics",
+            "http://103.154.184.52:4000/api/threshold/metrics",
             article
           )
 
@@ -298,7 +298,7 @@ const Metrics: React.FC = () => {
 
         try {
           const response = await axios.post(
-            "http://localhost:4000/api/threshold/check",
+            "http://103.154.184.52:4000/api/threshold/check",
             article
           )
 
@@ -332,7 +332,7 @@ const Metrics: React.FC = () => {
 
     try {
       axios
-        .post("http://localhost:4000/api/threshold/metrics", article)
+        .post("http://103.154.184.52:4000/api/threshold/metrics", article)
         .then((response) => {
           setIsLoading(false)
           const etData: number[] = response.data[0].result.map(
@@ -403,7 +403,7 @@ const Metrics: React.FC = () => {
 
       try {
         const response = await axios.post(
-          "http://localhost:4000/api/threshold/metrics",
+          "http://103.154.184.52:4000/api/threshold/metrics",
           article
         )
 

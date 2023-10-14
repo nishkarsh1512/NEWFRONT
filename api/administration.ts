@@ -1,7 +1,7 @@
 import axios from "axios"
 import { IUser } from "../types"
 
-const URL = "http://localhost:4000"
+const URL = "http://103.154.184.52:4000"
 
 const getUsers = async ({
   setUsers,

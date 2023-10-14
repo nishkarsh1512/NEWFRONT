@@ -8,7 +8,7 @@ export const startTimer = (selectedDevice: any, changesHandler: Function) => {
       // Code to run every second
       const article = { title: selectedDevice?.asset_id }
       axios
-        .post("http://localhost:4000/api/threshold/rms", article)
+        .post("http://103.154.184.52:4000/api/threshold/rms", article)
         .then((response) => {
           console.log(response.data)
           if (!open) {

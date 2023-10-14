@@ -353,7 +353,7 @@ const TimeWaveformChart = (props: Props) => {
     async ({ signal }) => {
       return await axiosConfig({
         method: "put",
-        url: "http://localhost:4000/api/analytics/timeWaveForm",
+        url: "http://103.154.184.52:4000/api/analytics/timeWaveForm",
         data: {
           start_time: startTime,
           end_time: endTime,

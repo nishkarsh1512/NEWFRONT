@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const URL = "http://localhost:4000"
+const URL = "http://103.154.184.52:4000"
 
 const getRmsData = async ({ asset_id }: { asset_id: string }) => {
   if (!!asset_id) {

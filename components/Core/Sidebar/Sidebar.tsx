@@ -221,7 +221,7 @@ export const Sidebar = () => {
           </div>
         </div>
 
-        <div className="gap-2 flex items-center relative pl-[18px] w-full h-[80px] overflow-hidden">
+        <div className="gap-2 flex items-center relative pl-[18px] w-full h-[152px] overflow-hidden">
           <img
             src={IIT.src}
             alt=""

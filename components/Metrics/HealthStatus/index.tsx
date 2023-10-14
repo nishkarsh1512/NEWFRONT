@@ -228,7 +228,7 @@ const Index = ({
 
                 try {
                   const response = await axios.post(
-                    "http://localhost:4000/api/threshold/check",
+                    "http://103.154.184.52:4000/api/threshold/check",
                     article
                   )
 
