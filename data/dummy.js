@@ -49,7 +49,7 @@ const images = new Map();
 for (let i = 1; i <= 15; i++) {
   images.set(
     `avatar${i}`,
-    `http://localhost:4000/image-uploads/avatar${i}.jpg`
+    `http://103.154.184.52:4000/image-uploads/avatar${i}.jpg`
   );
 }
 

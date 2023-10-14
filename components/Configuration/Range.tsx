@@ -171,7 +171,7 @@ const Range = ({ isAcc }: Props) => {
     async ({ signal }) => {
       return await axiosConfig({
         method: "put",
-        url: "http://localhost:4000/api/threshold/",
+        url: "http://103.154.184.52:4000/api/threshold/",
         data: { ...thresholds, [getLabel()]: { ...value } },
         signal,
       }).then((res) => res.data)
