@@ -193,13 +193,6 @@ const columns: GridColDef[] = [
       <div className="">
         <IconButton
           aria-label="delete"
-          className="text-lightBlue"
-          style={{ color: "#1340E8" }}
-        >
-          <EditIcon />
-        </IconButton>
-        <IconButton
-          aria-label="delete"
           className="text-infoCardDarkRed"
           style={{ color: "#FF0022" }}
           onClick={() => cellValues.formattedValue.delete()}

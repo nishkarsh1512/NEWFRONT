@@ -241,7 +241,7 @@ const Index = ({
                     (item: DataItem) => item.et
                   )
 
-                  console.log({ etData})
+                  console.log({ etData })
 
                   const xLabels: string[] = response.data.map(
                     (item: DataItem) => item.start_time

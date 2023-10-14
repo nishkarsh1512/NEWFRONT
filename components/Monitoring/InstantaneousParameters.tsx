@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, memo } from "react"
 import Highcharts from "highcharts"
 import HighChartsExporting from "highcharts/modules/exporting"
 import HighChartsData from "highcharts/modules/data"
@@ -49,7 +49,8 @@ const InstantaneousParameters: React.FC<{
   data: any[]
   isRmsDataLoading: boolean
 }> = (props) => {
-  let h1 = { ...props.data[0].name[0] }
+  let h1 = !!props.data[0].name ? { ...props.data[0].name[0] } : undefined
+
   const [axis, setAxis] = useState("X Axis")
   const [feature, setFeature] = useState("Acceleration FFT")
   const [isRealtime, setIsRealtime] = useState(false)
@@ -113,7 +114,7 @@ const InstantaneousParameters: React.FC<{
   const [myArray7, setMyArray7] = useState<number[]>([0.2, 0.5])
 
   useEffect(() => {
-    if (props.data[0].name[0]) {
+    if (props.data[0].name) {
       setIsRealtime(true)
       const stringArray: string[] = [...h1["x_rms_acl"]]
       const stringArray2: string[] = [...h1["y_rms_acl"]]
@@ -138,7 +139,7 @@ const InstantaneousParameters: React.FC<{
       setMyArray7(floatArray7)
       setRecentTime(stringArray4)
     }
-  }, [props.data])
+  }, [props.data[0].name])
 
   return (
     <div className="bg-white rounded-lg p-3 pt-0 overflow-hidden col-span-3 capitalize relative">
@@ -249,4 +250,4 @@ const InstantaneousParameters: React.FC<{
   )
 }
 
-export default InstantaneousParameters
+export default memo(InstantaneousParameters)
