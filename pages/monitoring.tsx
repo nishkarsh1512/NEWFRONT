@@ -19,6 +19,8 @@ const Monitoring = () => {
     refetch: refetchRmsData,
   } = useRmsData()
 
+  console.log({ rmsData, isRmsDataFetching, isRmsDataLoading })
+
   const [isRmsDataRefreshing, setIsRmsDataRefreshing] = useState(false)
 
   useEffect(() => {
