@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react"
-import Highcharts from "highcharts"
+import React, { useState, useEffect, memo } from "react"
+import Highcharts, { getJSON } from "highcharts"
 import axios from "axios"
 import DashboardLayout from "../layout/dashboard"
 import { SelectChangeEvent } from "@mui/material/Select"
@@ -76,8 +76,6 @@ const Metrics: React.FC = () => {
   }
 
   const handleChange = async (updatedValue: string) => {
-    console.log("value of age is")
-    console.log(updatedValue)
     setOpens(true)
 
     if (updatedValue == "10") {
@@ -100,9 +98,6 @@ const Metrics: React.FC = () => {
           const xLabels: string[] = response.data[0].result.map(
             (item: DataItem) => item.start_time
           )
-          console.log("printing et data")
-          console.log(etData)
-          console.log(response.data[0].result)
 
           setData(etData)
           setxLabels(xLabels)
@@ -117,7 +112,6 @@ const Metrics: React.FC = () => {
           startDate: startTime,
           endDate: endTime,
         }
-        console.log({ article })
 
         setIsLoading(true)
 
@@ -129,7 +123,6 @@ const Metrics: React.FC = () => {
 
           setIsLoading(false)
 
-          console.log(response.data)
           const etData: number[] = response.data.map(
             (item: DataItem) => item.et
           )
@@ -140,11 +133,8 @@ const Metrics: React.FC = () => {
 
           setxLabels(xLabels)
           setData(etData)
-          console.log(etData)
           setFilt(response.data[0])
-          console.log("point of attraction")
           setOpens(false)
-          console.log("point of attraction")
         } catch (error) {
           setIsLoading(false)
         }
@@ -166,9 +156,6 @@ const Metrics: React.FC = () => {
           const knnData: number[] = response.data[0].result.map(
             (item: DataItem) => item.knn
           )
-          console.log("printing knn data")
-          console.log(knnData)
-          console.log(response.data[0].result)
           const xLabels: string[] = response.data[0].result.map(
             (item: DataItem) => item.start_time
           )
@@ -197,7 +184,6 @@ const Metrics: React.FC = () => {
 
           setIsLoading(false)
 
-          console.log(response.data)
           const knnData: number[] = response.data.map(
             (item: DataItem) => item.knn
           )
@@ -208,7 +194,6 @@ const Metrics: React.FC = () => {
 
           setxLabels(xLabels)
           setData(knnData)
-          console.log(knnData)
           setFilt(response.data[0])
           setOpens(false)
         } catch (error) {
@@ -232,9 +217,6 @@ const Metrics: React.FC = () => {
           const bpData: number[] = response.data[0].result.map(
             (item: DataItem) => item.bp
           )
-          console.log("printing bp data")
-          console.log(bpData)
-          console.log(response.data[0].result)
           const xLabels: string[] = response.data[0].result.map(
             (item: DataItem) => item.start_time
           )
@@ -271,7 +253,6 @@ const Metrics: React.FC = () => {
 
           setxLabels(xLabels)
           setData(bpData)
-          console.log(bpData)
           setFilt(response.data[0])
           setOpens(false)
         } catch (error) {
@@ -295,9 +276,6 @@ const Metrics: React.FC = () => {
           const rfData: number[] = response.data[0].result.map(
             (item: DataItem) => item.rf
           )
-          console.log("printing rff data")
-          console.log(rfData)
-          console.log(response.data[0].result)
           const xLabels: string[] = response.data[0].result.map(
             (item: DataItem) => item.start_time
           )
@@ -336,7 +314,6 @@ const Metrics: React.FC = () => {
 
           setxLabels(xLabels)
           setData(rfData)
-          console.log(rfData)
           setFilt(response.data[0])
           setOpens(false)
         } catch (error) {
@@ -349,9 +326,6 @@ const Metrics: React.FC = () => {
   useEffect(() => {
     setOpens(true)
     setIsRealtime(true)
-    console.log("device changed")
-    console.log(selectedDevice)
-    console.log(selectedDevice.asset_id)
     const article = { title: selectedDevice.asset_id }
 
     setIsLoading(true)
@@ -361,7 +335,6 @@ const Metrics: React.FC = () => {
         .post("http://localhost:4000/api/threshold/metrics", article)
         .then((response) => {
           setIsLoading(false)
-          console.log(response.data)
           const etData: number[] = response.data[0].result.map(
             (item: DataItem) => item.et
           )
@@ -371,9 +344,6 @@ const Metrics: React.FC = () => {
 
           setData(etData)
           setxLabels(xLabels)
-
-          console.log(selectedDevice?.asset_id)
-          console.log(selectedDevice?.asset_name)
 
           setLatestBp(response.data[0].latestDocumentsBp)
           setLatestEt(response.data[0].latestDocumentsEt)
@@ -399,7 +369,7 @@ const Metrics: React.FC = () => {
       enabled: false,
     },
     xAxis: {
-      categories: xLabels, // Set x-axis labels
+      categories: xLabels.slice().reverse(), // Set x-axis labels
     },
     yAxis: {
       title: {
@@ -519,7 +489,7 @@ const Metrics: React.FC = () => {
     }
   }
 
-  console.log({ xLabels, data })
+  console.log({jsonData: getJsonData()})
 
   return (
     <DashboardLayout>
@@ -1165,4 +1135,4 @@ const Metrics: React.FC = () => {
   )
 }
 
-export default Metrics
+export default memo(Metrics)

@@ -57,7 +57,7 @@ const Monitoring = () => {
           </div>
           <div className="flex flex-col gap-4 justify-between max-h-[1230px]">
             <MaintenanceIndex
-              data={!!rmsData ? [{ name: rmsData }] : [{ name: [] }]}
+              data={!!rmsData ? [{ name: rmsData }] : [{ name: undefined }]}
               isRmsDataLoading={
                 (isRmsDataLoading && isRmsDataFetching) || isRmsDataRefreshing
               }
@@ -68,7 +68,7 @@ const Monitoring = () => {
           </div>
           <div className="col-span-4">
             <InstantaneousParameters
-              data={!!rmsData ? [{ name: rmsData }] : [{ name: [] }]}
+              data={!!rmsData ? [{ name: rmsData }] : [{ name: undefined }]}
               isRmsDataLoading={
                 (isRmsDataLoading && isRmsDataFetching) || isRmsDataRefreshing
               }

@@ -33,14 +33,18 @@ if (typeof Highcharts === "object") {
 }
 
 const InstantaneousParameters: React.FC<{
-  data: any[]
+  data: { name: any[] }[]
+
   isRmsDataLoading: boolean
 }> = (props) => {
+  console.log({ props })
   const chartRef = useRef<HighchartsReactRefObject>(null)
 
-  let h1 = { ...props.data[0].name[0] }
+  let h1 = !!props.data[0].name ? { ...props.data[0].name[0] } : undefined
 
-  const recentTimeArray: string[] = [...h1["timeup"]]
+  const recentTimeArray: string[] | undefined = !!h1
+    ? [...h1["timeup"]]
+    : undefined
 
   const [operational, setOperational] = useState<string>("0")
   const [caution, setCaution] = useState<string>("0")
@@ -75,7 +79,7 @@ const InstantaneousParameters: React.FC<{
   }
 
   useEffect(() => {
-    if (props.data[0].name[0]) {
+    if (props.data[0].name) {
       const fakeArray = [...h1["summary"]]
       const operationalAsString = "" + fakeArray[0].operational
       setOperational(operationalAsString)
@@ -87,7 +91,7 @@ const InstantaneousParameters: React.FC<{
       const disconnectedAsString = "" + disconnectedVarr
       setDisconnected(disconnectedAsString)
     }
-  }, [props.data])
+  }, [props.data[0].name])
 
   const maintenanceOptions = () => ({
     chart: {
@@ -132,22 +136,22 @@ const InstantaneousParameters: React.FC<{
         data: [
           {
             name: "Operational",
-            y: Number(operational),
+            y: parseFloat(parseFloat(operational ?? "0").toFixed(8)),
             color: "#31E802",
           },
           {
             name: "Caution",
-            y: Number(caution),
+            y: parseFloat(parseFloat(caution ?? "0").toFixed(8)),
             color: "#ffc107",
           },
           {
             name: "Warning",
-            y: Number(warning),
+            y: parseFloat(parseFloat(warning ?? "0").toFixed(8)),
             color: "#FF0022",
           },
           {
             name: "Disconnected",
-            y: 100 - Number(operational),
+            y: 100 - parseFloat(operational ?? "0"),
             color: "#9e9e9e",
           },
         ],
@@ -214,6 +218,7 @@ const InstantaneousParameters: React.FC<{
             highcharts={Highcharts}
             options={maintenanceOptions()}
           />
+
           <p className="text-xs text-gray-500 mt-2 pl-4">
             {!!props.data &&
               !!recentTimeArray &&
