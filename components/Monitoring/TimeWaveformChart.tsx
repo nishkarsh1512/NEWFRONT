@@ -970,6 +970,7 @@ const TimeWaveformChart = (props: Props) => {
                   jsonData: getChartJsonData(),
                   fileName: "timewaveform.pdf",
                   headers: [...Object.keys(getChartJsonData()[0])],
+                  assetId: selectedDevice?.asset_id,
                 }),
               image: "",
             },

@@ -4,13 +4,13 @@ import { useRouter } from "next/router"
 import Sidebar from "../components/Core/Sidebar/Sidebar"
 import useAuthStore from "../store/auth"
 import React from "react"
-// import useGetThresholds from "../pages/hooks/useGetThresholds"
 import { AppContextProvider } from "../context/contextProvider"
+import { NoSsr } from "@mui/material"
+import LoadingScreen from "../components/Core/LoadingScreen"
 
-function Layout({ children }: { children: React.ReactNode }) {
+const Layout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter()
   const { me } = useAuthStore()
-  // useGetThresholds(Boolean(me))
 
   useEffect(() => {
     if (!me) {
@@ -19,15 +19,21 @@ function Layout({ children }: { children: React.ReactNode }) {
   }, [me])
 
   return (
-    <AppContextProvider>
-      <div className="h-screen relative overflow-hidden flex flex-row justify-start bg-bodyBgGrey1">
-        <Sidebar />
-        <div className="w-full overflow-y-scroll ml-20">
-          <div className="px-7">{children}</div>
-        </div>
-        <LogoutModal />
-      </div>
-    </AppContextProvider>
+    <NoSsr>
+      <AppContextProvider>
+        {!!me ? (
+          <div className="h-screen relative overflow-hidden flex flex-row justify-start bg-bodyBgGrey1">
+            <Sidebar />
+            <div className="w-full overflow-y-scroll ml-20">
+              <div className="px-7">{children}</div>
+            </div>
+            <LogoutModal />
+          </div>
+        ) : (
+          <LoadingScreen />
+        )}
+      </AppContextProvider>
+    </NoSsr>
   )
 }
 

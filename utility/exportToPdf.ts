@@ -1,20 +1,30 @@
 // @ts-ignore
 import jsPDF from "jspdf"
 import "jspdf-autotable"
+import getExportTitle from "./getExportTitle"
 
 const exportToPdf = async ({
   fileName,
   jsonData,
   headers,
+  assetId,
 }: {
   jsonData: any[]
   fileName: `${string}.pdf`
   headers: string[]
+  assetId: string
 }) => {
   const pdf = new jsPDF("p", "pt", "a4")
 
+  const pdfTitle = getExportTitle({
+    assetId,
+  })
+
+  pdf.text(pdfTitle, pdf.internal.pageSize.width / 2, 20, { align: "center" })
+
   var rows = jsonData.map((data) => [...Object.values(data)])
 
+  // @ts-ignore
   pdf.autoTable(headers, rows, {
     startY: 65,
     theme: "grid",

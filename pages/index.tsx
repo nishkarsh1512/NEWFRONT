@@ -1,27 +1,39 @@
 import Navbar from "../components/Navbar/Navbar"
 import Header from "../containers/Header/Header"
 import LoginModal from "../components/Core/Modal/LoginModal"
-import Features from "../containers/Features/Features"
-import Needs from "../containers/Needs/Needs"
-import { Faq } from "../containers/Faq/Faq"
 import Footer1 from "../containers/Footer1/Footer1"
 import DrawerRight from "../components/Navbar/DrawerRight"
-import { useAppStateContext } from "../context/contextProvider"
+import { useEffect } from "react"
+import { useRouter } from "next/router"
+import useAuthStore from "../store/auth"
+import LoadingScreen from "../components/Core/LoadingScreen"
+import { NoSsr } from "@mui/material"
 
 const Home = () => {
-  // @ts-ignore
-  const { isScreenLoading, setIsScreenLoading } = useAppStateContext()
+  const router = useRouter()
+  const { me } = useAuthStore()
+
+  useEffect(() => {
+    if (!!me) {
+      router.push("/monitoring")
+    }
+  }, [me])
 
   return (
     <>
-      <DrawerRight />
-      <LoginModal />
-      <Navbar />
-      <Header />
-      {/* <Features /> */}
-      {/* <Needs /> */}
-      {/* <Faq /> */}
-      <Footer1 />
+      <NoSsr>
+        {!me ? (
+          <>
+            <DrawerRight />
+            <LoginModal />
+            <Navbar />
+            <Header />
+            <Footer1 />
+          </>
+        ) : (
+          <LoadingScreen />
+        )}
+      </NoSsr>
     </>
   )
 }

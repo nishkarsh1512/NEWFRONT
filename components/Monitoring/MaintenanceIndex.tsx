@@ -19,6 +19,7 @@ import exportToPdf from "../../utility/exportToPdf"
 import exportToXLSX from "../../utility/exportToXlsx"
 import html2canvas from "html2canvas"
 import { Skeleton } from "@mui/material"
+import useDeviceStore from "../../store/device"
 
 if (typeof Highcharts === "object") {
   HighChartsExporting(Highcharts)
@@ -49,6 +50,8 @@ const InstantaneousParameters: React.FC<{
   const [caution, setCaution] = useState<string>("0")
   const [warning, setWarning] = useState<string>("0")
   const [disconnected, setDisconnected] = useState<string>("0")
+
+  const { selectedDevice } = useDeviceStore()
 
   // Get Chart json data
   const getChartJsonData = () => [
@@ -195,6 +198,7 @@ const InstantaneousParameters: React.FC<{
                     jsonData: getChartJsonData(),
                     fileName: "maintenanceIndex.pdf",
                     headers: [...Object.keys(getChartJsonData())],
+                    assetId: selectedDevice?.asset_id,
                   }),
                 image: "",
               },

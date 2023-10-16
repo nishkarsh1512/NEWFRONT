@@ -28,15 +28,15 @@ const Header = () => {
             Insights to Vibration
           </h1>
           <h2 className="text-white font-semibold md:text-3xl text-1xl">
-            Unveiling the Future of Predictive Monitoring
+            Unveiling the Future of Asset Monitoring
           </h2>
-          <span className="text-white md:text-xl font-medium md:w-160">
+          {/* <span className="text-white md:text-xl font-medium md:w-160">
             <span className="text-lightBlue2 cursor-pointer font-semibold">
               Elevate equipment efficiency with EyeVib: <br />
             </span>
             Pioneering vibration insights for proactive maintenance and
             operational excellence.
-          </span>
+          </span> */}
           <button
             className="py-3 px-4 landing-bg rounded text-white font-semibold shadow bg-themeBlue1 hover:scale-95 transition-all duration-300 hover:shadow-logCard"
             onClick={() => {
@@ -47,17 +47,14 @@ const Header = () => {
           </button>
         </div>
       </div>
-      <div className="mx-auto flex flex-col gap-4 items-center bg-white py-10 xl:relative md:bottom-32 z-10 rounded shadow xl:max-w-6xl">
+      <div className="mx-auto flex flex-col gap-4 items-center bg-white py-10 xl:relative md:bottom-32 z-10 rounded-3xl shadow xl:max-w-6xl">
         <h1 className="md:text-4xl text-3xl font-semibold min-w-fit whitespace-nowrap">
           Why EyeVib
         </h1>
         <p className="text-center md:text-xl font-medium text-xs leading-8 tracking-wider lg:w-5/6 md:px-4 px-2">
-          EyeVib software is an advanced AI-driven solution designed for
-          real-time equipment health monitoring and diagnostics. It helps
-          industries maximize productivity by proactively assessing the
-          condition of their machinery. This solution not only ensures smoother
-          production but also saves significant costs related to unexpected
-          downtimes.
+          <span className="text-lightBlue">EyeVib</span> - an advanced Al-driven
+          solution designed for real-time equipment health monitoring and
+          diagnostics through vibration signal to avoid downtime cost.
         </p>
       </div>
       <div className="relative xl:bottom-52 xl2550:bottom-40">
@@ -66,7 +63,7 @@ const Header = () => {
           alt="dots background"
           className="w-full object-cover xl:rounded shadow lg:max-h-35-rem xl1400:max-h-35-rem sm750:h-40-rem sm550:h-25-rem sm400:h-30-rem h-35-rem"
         />
-        <div className="absolute lg1100:top-60 sm:top-32 top-16 w-full z-10 flex items-center text-white md:px-20 px-10">
+        {/* <div className="absolute lg1100:top-60 sm:top-32 top-16 w-full z-10 flex items-center text-white md:px-20 px-10">
           <div className="lg:text-2xl md:text-xl text-center font-medium leading-8 tracking-wider lg1100:max-w-7xl mx-auto">
             <p className="mb-5">
               EyeVib leverages the power of advanced AI algorithms to
@@ -81,7 +78,7 @@ const Header = () => {
               ensuring smooth and uninterrupted production processes.
             </p>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   )

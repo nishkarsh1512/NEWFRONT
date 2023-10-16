@@ -736,6 +736,7 @@ const FftChart: React.FC<{ data: any[]; isRmsDataLoading: boolean }> = (
                     jsonData: getChartJsonData(),
                     fileName: "fft.pdf",
                     headers: [...Object.keys(getChartJsonData()[0])],
+                    assetId: selectedDevice?.asset_id,
                   }),
                 image: "",
               },
