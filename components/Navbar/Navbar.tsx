@@ -101,9 +101,14 @@ const useStyles = createStyles((theme) => ({
   },
 }))
 
-const Navbar = () => {
+interface Props {
+  isDevsPage?: boolean
+}
+
+const Navbar = ({ isDevsPage }: Props) => {
   const { classes } = useStyles()
-  console.log(useAppStateContext)
+
+  const router = useRouter()
 
   //@ts-ignore
 
@@ -111,7 +116,9 @@ const Navbar = () => {
     classnames(
       "hover:bg-lightBlue2 rounded hover:bg-opacity-20 hover:text-lightBlue2 hover:shadow py-2 px-4 mx-2 transition-all duration-300 font-semibold",
       {
-        "text-lightBlue2": label === "Home",
+        "text-lightBlue2":
+          (label === "Home" && router?.asPath === "/") ||
+          (label === "Developers" && router?.asPath === "/developers"),
       }
     )
 
@@ -120,11 +127,11 @@ const Navbar = () => {
       return (
         <Menu.Item
           key={link}
-          onClick={() => {
+          onClick={() =>
             label === "About CoEAMT"
-              ? window?.open("http://localhost:3000/Brochure_CoEAMT.pdf")
+              ? window?.open("/Brochure_CoEAMT.pdf")
               : null
-          }}
+          }
         >
           {label}
         </Menu.Item>
@@ -136,9 +143,10 @@ const Navbar = () => {
         <Menu key={link.label} trigger="hover" exitTransitionDuration={0}>
           <Menu.Target>
             <a
-              href={link.link}
               className={getLinkClasses(link.label)}
-              onClick={(event) => event.preventDefault()}
+              onClick={(event) => {
+                event.preventDefault()
+              }}
             >
               <Center>
                 <span>{link.label}</span>
@@ -156,7 +164,10 @@ const Navbar = () => {
         key={link.label}
         href={link.link}
         className={getLinkClasses(link.label)}
-        onClick={(event) => event.preventDefault()}
+        onClick={(event) => {
+          event.preventDefault()
+          router.push(link.link)
+        }}
       >
         {link.label}
       </a>
@@ -164,7 +175,6 @@ const Navbar = () => {
   })
 
   const [LOGIN, SETLOGIN] = React.useState(false)
-  const router = useRouter()
 
   //@ts-ignore
   const { loginModalActive, setLoginModalActive } = useAppStateContext()
@@ -187,27 +197,33 @@ const Navbar = () => {
               />
             </div>
             <div className="ml-4">
-              <p>
-                Developed by Centre of Excellence in Advanced Manufacturing
-                Technology,
+              <p className="flex flex-col">
+                <span className="relative top-1">Developed by</span>
+                <span className="text-lg font-semibold">
+                  Centre of Excellence in Advanced Manufacturing Technology
+                </span>
               </p>
-              <p className="text-center">IIT Kharagpur</p>
+              <p className="text-lg font-semibold bottom-1 relative">
+                IIT Kharagpur
+              </p>
             </div>
           </div>
           <div className="flex items-center">
             <div className="items-center md1050:flex hidden">
-              <Group spacing={5} className={classes.links}>
+              <Group spacing={0} className={classes.links}>
                 {items}
               </Group>
 
-              <button
-                className="landing-bg text-white py-2 px-6 rounded ml-2 font-semibold hover:shadow-inputTheme transition-all duration-300 hover:scale-95"
-                onClick={() => {
-                  setLoginModalActive(true)
-                }}
-              >
-                Login
-              </button>
+              {!isDevsPage && (
+                <button
+                  className="landing-bg text-white py-2 px-6 rounded ml-2 font-semibold hover:shadow-inputTheme transition-all duration-300 hover:scale-95"
+                  onClick={() => {
+                    setLoginModalActive(true)
+                  }}
+                >
+                  Login
+                </button>
+              )}
             </div>
           </div>
 

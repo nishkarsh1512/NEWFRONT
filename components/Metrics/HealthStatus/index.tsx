@@ -318,6 +318,7 @@ const Index = ({
                   jsonData: [...jsonData.data],
                   fileName: "health_state.pdf",
                   headers: [...Object.keys(jsonData.data[0])],
+                  assetId: selectedDevice?.asset_id,
                 }),
               image: "",
             },

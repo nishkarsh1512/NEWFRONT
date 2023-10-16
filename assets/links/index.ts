@@ -7,6 +7,7 @@ import {
   BsQuestionDiamondFill,
   BsTwitter,
 } from "react-icons/bs"
+import CodeIcon from "@mui/icons-material/Code"
 import {
   FaBell,
   FaDiscord,
@@ -45,11 +46,14 @@ export const headerLinks = [
         label: "About CoEAMT",
       },
       {
-        link:
-          "https://drive.google.com/uc?export=download&id=1PGLUHwRzedYCPUtu-AnMcgAkj486Dclt",
+        link: "https://drive.google.com/uc?export=download&id=1PGLUHwRzedYCPUtu-AnMcgAkj486Dclt",
         label: "About the software",
       },
     ],
+  },
+  {
+    link: "/developers",
+    label: "Developers",
   },
 ]
 
@@ -174,6 +178,13 @@ export const menuItems = [
     label: "Metrics",
     icon: BsGraphUp,
     link: "/metrics",
+    active: true,
+  },
+  {
+    id: 4,
+    label: "Developers",
+    icon: CodeIcon,
+    link: "/developers",
     active: true,
   },
 ]

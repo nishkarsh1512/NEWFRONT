@@ -1,10 +1,12 @@
 const EyeVibLogo = ({ mode }: { mode: string }) => (
   <div className="flex items-center cursor-pointer">
-    <img
-      src="images/eyevib.png"
-      alt="iit logo"
-      className="landing-bg w-12 h-12 p-2.5 rounded-full shadow-logCard blue-image"
-    />
+    <div className="landing-bg w-12 h-12 shadow-logCard rounded-full flex items-center justify-center">
+      <img
+        src="images/eyevib.png"
+        alt="iit logo"
+        className="w-[18px]"
+      />
+    </div>
     <p
       className={`font-semibold ml-2 text-2xl ${
         mode === "light" ? "text-black" : "text-gray-400"
